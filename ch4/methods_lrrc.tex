@@ -1,0 +1,152 @@
+The rectified co-occurrence $\BC^*$ in Section \ref{c4sec:bac} must be of rank
+$K$ and positive semidefinite, hinting at an opportunity to represent it in
+terms of an outer product $\BY \BY^T$ for some $\BY \In \BBR^{N \Times K}$. One
+idea for achieving this structure is to use a low-rank representation $\BC_t =
+\BY_t \BY_t$ throughout the rectification in Algorithm \ref{alg:rawa}. Another
+way to obtain this structure is to directly minimize $\|\BC - \BY \BY^T\|_F$
+with the necessary constraints. In this section, we propose two new algorithms
+to simultaneously compress and rectify the input by representing $\BC \in \BBR^
+{N \Times N}$ by a low-rank outer product $\BY \BY^T$.
+\begin{figure}[ht]
+	\begin{algorithm}[H]
+		\SetKwInput{KwInput}{Input}
+		\SetKwInput{KwOutput}{Output}
+		\SetKwRepeat{Repeat}{repeat $with \; t=0, 1, 2, ...$}{until}
+		\DontPrintSemicolon
+		\KwInput{Object co-occurrence $\BC \In \BBR^{N \Times N}$}
+		\hspace{28px} The number of clusters $K$\\
+		\KwOutput{Rectified compression $\BY \In \BBR^{N \Times K}$}
+		\Begin{
+			$\BE \leftarrow \bm{0}\in\BBR^{N\times N}\;\;$ (sparse format)\;
+			$\BC^{op}: \Bx \rightarrow \BC \Bx\;\;$ (Implicit operator)\;
+			\Repeat{$\BE$ converges}{
+				$(\BU,\BLambda_K) \leftarrow$ Truncated-Eig($\BC^{op}, K$)\;
+				\vspace{2px}
+				$\BLambda_K^+ \leftarrow \max(\BLambda_K, 0)$\;
+				\vspace{2px}
+				$\BY \leftarrow \BU(\BLambda_K^+)^{1/2}$\;
+				\vspace{2px}
+				$\BE_{ij} \leftarrow \max(-\BY_{i\ast}\BY_{j\ast}^T, 0)$\;
+				\vspace{2px}
+				$r \leftarrow (1 - \|\BY^T\Be\|_2^2-\sum_{ij}\BE_{ij})/N^2$\;
+				\vspace{1px}
+				$\BC^{op}:\Bx \rightarrow \BY(\BY^T\Bx) + \BE\Bx + r(\Be^T\Bx)\Be$\;
+			}
+		}
+		\caption{ENN-rectification (ENN)}
+	\label{alg:enn}        
+	\end{algorithm}
+\end{figure}
+\begin{figure}[ht]
+  \begin{algorithm}[H]
+		\SetKwInput{KwInput}{Input}
+		\SetKwInput{KwOutput}{Output}
+		\DontPrintSemicolon
+		\KwInput{Object co-occurrence $\BC \In \BBR^{N \Times N}$}
+		\hspace{28px} The number of clusters $K$\\
+		\KwOutput{Rectified compression $\BY \In \BBR^{N \Times K}$}
+		\Begin{
+			$(\BV, \BD) \leftarrow$ Truncated-Eig$(\BC, K)$\;
+			$(\BX_0, \BY_0) \leftarrow (\BV \sqrt{\BD}, \BV \sqrt{\BD})$\;
+	    \Repeat{$\BY$ converges}{
+	    	$c_t \leftarrow \gamma L_1(\BY_{t})$\;
+	      \vspace{3px}
+	      $\BX_{t+1}' \leftarrow \BX_{t} - (1/c_t)\nabla_{\BX} J(\BX_{t}, 
+	      \BY_{t})$\;
+	      \vspace{3px}
+	      $\BX_{t+1} \leftarrow \max(\BX_{t+1}', 0)$\;
+	      \vspace{3px}
+	      $d_t \leftarrow \gamma L_2(\BX_{t+1})$\;
+	      \vspace{3px}
+	      $\BY_{t+1}' \leftarrow \BY_{t} - (1/d_t)\nabla_{\BY} J(\BX_{t+1}, 
+	      \BY_{t})$\;
+	      \vspace{3px}
+	      $\BY_{t+1} \leftarrow \max(\BY_{t+1}', 0)$\;
+	    }
+		}
+		\caption{PALM-rectification (PALM)}
+	  \label{alg:palm}      
+	\end{algorithm}
+\end{figure}
+
+\subsection{Epsilon Non-Negative Rectification (ENN)}
+The alternating projection iteration in Algorithm~\ref{alg:rawa} produces
+low-rank semi-definite intermediate matrices in factored form at each iteration.
+By construction, the positive semi-definite projection ($\PSD_K$) and the
+normalization projection ($\NOR$) produce positive semi-definite matrices of
+rank $K$ and $K+1$, respectively.  Unfortunately, the final projection to
+enforce elementwise non-negativity ($\NN$) destroys this low rank structure.
+However, the $\NN$ projection only makes significant changes to a few elements;
+that is, the output of the $\NN$ projection at step $t$ is nearly rank $K+1$
+plus a sparse correction $\BE_t$.  The Epsilon Non-Negative Rectification
+algorithm (Algorithm~\ref{alg:enn}) has the same structure as Algorithm~
+\ref{alg:rawa}, but with the key difference that it returns a
+sparse-plus-low-rank representation of the $\NN$ projection rather than
+materializing a dense representation. Matrix-vector products with this
+sparse-plus-low-rank representation require $O(NK + \operatorname{nnz}(\BE_t))$
+time, and $O(K)$ such matrix-vector products can be used in a Lanczos
+eigen-solver to compute the truncated eigen-decomposition at the start of the
+next iteration.
+
+Maintaining a sparse correction matrix $\BE_t$ at each step lets the ENN
+approach avoid the storage overheads of the original alternating projection
+algorithm.  To overcome the quadratic time cost at each iteration, though, we
+need to avoid explicitly computing every element of the intermediate $\BY \BY^T$
+in the course of the $\NN$ projection. However, we can bound the magnitude of
+many elements of $\BY\BY^T$ by the Cauchy-Schwartz inequality: $|\BC_{ij}| \leq
+\|\By_i\|_2 \|\By_j\|_2$ where $\By_i$ and $\By_j$ denote columns of $\BY^T$.
+Let $\BI$ denote the index set indices \smash{$\{i :\|\By_i\|^2_2 > \epsilon\}
+\subseteq [N]$} for given $\epsilon$; then every large entry of $\BC$ belongs to
+either $\BY_{\BI*}\BY^T$ or $\BY(\BY^T)_{*\BI}$. As $\BC$ is symmetric, checking
+the negative entries in $\BY_{\BI*}\BY^T$ is sufficient to find a symmetric
+correction $\BE$ that guarantees $\BY\BY^T \Plus \BE \Geq -\epsilon$. We refer
+to this property as \textit{Epsilon Non-Negativity}: $\epsilon$ balances the
+trade-off between the effect of leaving small negative entries versus increasing
+the size of $\BI$ to look up. We limit $|\BI|$ to be $\calO(K)$ based on the
+common sampling complexity of a suitable set of rows for a near\hyp{}optimal
+rank\hyp{}K approximation\footnote{This choice is standard in literature on
+low-rank approximation via column subset selection.}.
+
+\subsection{Proximal Alternating Linearized Minimization Rectification (PALM)}
+
+To avoid small negative entries, we investigate another rectified compression
+algorithm that directly minimizes $\|\BC - \BY \BY^T\|_F$ subject to the
+stronger $\NN$-constraint $\BY \Geq 0$ and the usual $\NOR$-constraint $\|\BY^T
+\Be\|_2 \Eq 1$. Concretely, we try to
+\begin{equation}
+  \text{minimize} \;\; J(\BX, \BY) := \frac{1}{2} \| \BC - \BX \BY^T \|_F^2 + 
+  \frac{s}{2} \| \BX - \BY \|_F^2 \;\;\;\; \text{subject to} \;\; \BX \geq 0, 
+  \BY \geq 0. \label{eqn:palm}
+\end{equation}
+$\PSD_K$- and $\NOR$-constraints are implicitly satisfied by jointly minimizing
+the two terms in the objective function $J$, whereas $\NN$-constraint is
+explicit in the formulation. Thus we can apply the Proximal Alternating
+Linearized Minimization \cite{bolte2014proximal} for learning $\BY$ given $\BC$;
+the relevant proximal operator is $\NN$ projection of $\BY$, which takes $\calO
+(NK)$ at most.
+
+Note that $J$ is semi-algebraic (as it is a real polynomial) with two partial
+derivatives: $\nabla_{\BX}J \Eq (\BX \BY^T \Minus \BC)\BY \Plus s(\BX \Minus
+\BY)$ and $\nabla_{\BY}J \Eq (\BY \BX^T \Minus \BC)\BX \Plus s(\BY \Minus \BX)$.
+So, the following lemma guarantees the global convergence.
+\begin{lemma}
+  For any fixed $\BY$, $\nabla_{\BX}J(\BX, \BY)$ is globally Lipschitz 
+  continuous with the moduli $L_1(\BY) \Eq \| \BY^T \BY \Plus s\BI_K \|_2$. So 
+  is $\nabla_{\BY}J(\BX, \BY)$ given any fixed $\BX$ with $L_2(\BX) \Eq \| \BX^T
+  \BX \Plus s\BI_K \|_2$.
+\end{lemma}
+\begingroup
+\allowdisplaybreaks
+\begin{proof}
+	\begin{align*}
+		&\| \nabla_{\BX}J(\BX, \BY) - \nabla_{\BX}J(\BX', \BY) \|_F \\
+		\Eq{} & \|(\BY^T\BY + s\BI_K)(\BX - \BX')\|_F \\
+		\leq{} & \|\BY^T \BY + s\BI_k\|_2 \cdot\|\BX - \BX'\|_F
+	\end{align*} 
+	The proof is symmetric for the other case with $L_2(\BX) = \| \BX^T \BX
+	+ s\BI_K \|_2$.
+\end{proof}
+\endgroup
+Algorithm \ref{alg:palm} shows the PALM-rectification with the adaptive control
+of the learning rates based on the tight 2-norm Lipschitz modulis at each step
+$t$.
