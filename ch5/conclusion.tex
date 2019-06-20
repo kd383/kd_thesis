@@ -1,0 +1,23 @@
+In this work, we demonstrate that the interpolative separable density fitting
+decomposition (ISDF) can be efficiently performed through a separated treatment
+of interpolation points and interpolation vectors. We find that the centroidal
+Voronoi tessellation method (CVT) provides an effective choice of interpolation
+points using only the electron density as the input information. The resulting
+interpolation points are by design inhomogeneous in the real space, concentrated
+at regions where the electron density is significant, and are well separated
+from each other. These are all key ingredients for obtaining a low rank
+decomposition that is accurate and a well conditioned set of interpolation
+vectors. We demonstrate that the CVT-based ISDF decomposition can be an
+effective strategy for reducing the cost hybrid functional calculations for
+large systems. The CVT-based method achieves similar accuracy when compared with
+that obtained from QRCP, with significantly improved efficiency. Since the
+solution of the CVT method depends continuously with respect to the electron
+density, we also find that the CVT method produces a smoother potential energy
+surface than that by the QRCP method in the context of ab initio molecular
+dynamics simulation. Our analysis indicates that it might be possible to further
+improve the quality of the interpolation points by taking into account the
+gradient information in the weight vector. We also expect that the CVT-based
+strategy can also be useful in other contexts where the ISDF decomposition is
+applicable, such as ground state calculations with rung-5 exchange-correlation
+functionals, and excited state calculations. These will be explored in the
+future work.

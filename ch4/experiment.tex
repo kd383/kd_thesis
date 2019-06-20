@@ -24,7 +24,7 @@ rectification component as well as the entire pipeline of LR-JSMF. To produce a
 strong baseline, we begin with constructing the full co-occurrence $\BC$ from
 each of our datasets $\BH$ by \eqref{eqn:unbiased}, and produce the rectified
 $\BC_{AP}$ by running Alternating Projection (AP) on $\BC$. Next we compress
-$\BC$ into $\BY_{ENN}$ and $\BY_{PALM}$ by running ENN (50 iterations, $|\BI|\Eq
+$\BC$ into $\BY_{ENN}$ and $\BY_{PALM}$ by running ENN (50 iterations, $|I|\Eq
 10K \Plus 1000$) and PALM (100 iterations, $s\Eq1e^{-4}$). For testing our
 complete low-rank pipeline, we also construct $(\BV, \BD)$ directly from the raw
 data $\BH$ by the randomized eigen-decomposition in Algorithm \ref{alg:lr-jsmf},

@@ -95,14 +95,14 @@ need to avoid explicitly computing every element of the intermediate $\BY \BY^T$
 in the course of the $\NN$ projection. However, we can bound the magnitude of
 many elements of $\BY\BY^T$ by the Cauchy-Schwartz inequality: $|\BC_{ij}| \leq
 \|\By_i\|_2 \|\By_j\|_2$ where $\By_i$ and $\By_j$ denote columns of $\BY^T$.
-Let $\BI$ denote the index set indices \smash{$\{i :\|\By_i\|^2_2 > \epsilon\}
+Let $I$ denote the index set indices \smash{$\{i :\|\By_i\|^2_2 > \epsilon\}
 \subseteq [N]$} for given $\epsilon$; then every large entry of $\BC$ belongs to
-either $\BY_{\BI*}\BY^T$ or $\BY(\BY^T)_{*\BI}$. As $\BC$ is symmetric, checking
-the negative entries in $\BY_{\BI*}\BY^T$ is sufficient to find a symmetric
+either $\BY_{I*}\BY^T$ or $\BY(\BY^T)_{*I}$. As $\BC$ is symmetric, checking
+the negative entries in $\BY_{I*}\BY^T$ is sufficient to find a symmetric
 correction $\BE$ that guarantees $\BY\BY^T \Plus \BE \Geq -\epsilon$. We refer
 to this property as \textit{Epsilon Non-Negativity}: $\epsilon$ balances the
 trade-off between the effect of leaving small negative entries versus increasing
-the size of $\BI$ to look up. We limit $|\BI|$ to be $\calO(K)$ based on the
+the size of $I$ to look up. We limit $|I|$ to be $\calO(K)$ based on the
 common sampling complexity of a suitable set of rows for a near\hyp{}optimal
 rank\hyp{}K approximation\footnote{This choice is standard in literature on
 low-rank approximation via column subset selection.}.

@@ -7,27 +7,12 @@ representation, which does not have to be derived from our methods. Moreover, it
 is exact for non-negative $\BC$, but it is robust in practice when we allow
 small negative entries in $\BC$, as in the case with ENN.
 
-The first step is to $L_1$\hyp{}normalize the rows of $\BC$. Given $\BC \Geq 0$,
-the $L_1$\hyp{}norm of each row is simply the sum of all its entries, so we can
-calculate the row norms by $\Bd \Eq \BY(\BY^T\Be)$. To obtain the normalized
-$\BC$, we simply scale the rows of $\BY$, and \smash{$\BCbar \Eq (\diag(\Bd)^
-{-1}\BY)\BY^T \Eq \BYbar\BY^T$}. These steps cost $\calO(NK)$.
-
-Next, we need to apply column pivoted QR to \smash{$\BCbar^T$} in order to
-identify the pivots as our anchor objects $\BS$. By taking the QR decomposition
-$\BY \Eq \BQ\BR$, $\BCbar^T$ can be further transformed into $\BQ\BR\BYbar^T$.
-Notice that $\BCbar^T$ is an orthogonal embedding of $\BX^T = \BR\BYbar^T$ onto
-a higher-dimensional space, which preserves the column $L_2$-norms. Lemma 
-\ref{lem:qrequiv} shows that column pivoted QR on $\BCbar^T$ and on
-$\BR\BYbar^T$ are equivalent, which allows us to lower the computation cost from
-$\calO(N^2K)$ to $\calO(NK^2)$.
-\vspace*{\fill}
-\begin{figure}[h]
+\begin{figure}[htbp]
 	\begin{algorithm}[H]
 		\SetKwInput{KwInput}{Input}
 		\SetKwInput{KwOutput}{Output}
 		\DontPrintSemicolon
-    \KwInput{Object co-occurrence $\BC \Eq \BY \BY^T$}
+    	\KwInput{Object co-occurrence $\BC \Eq \BY \BY^T$}
 		\KwOutput{Anchor objects $\BS \Eq \{s_1, ..., s_K\}$\\ 
 		\hspace{36px} Latent clusters $\BB \In \BBR^{N \Times K}$\\
 		\hspace{36px} Cluster correlations $\BA \In \BBR^{K \Times K}$}
@@ -75,7 +60,21 @@ $\calO(N^2K)$ to $\calO(NK^2)$.
 	\label{alg:lr-jsmf}        
 	\end{algorithm}
 \end{figure}
-\FloatBarrier
+
+The first step is to $L_1$\hyp{}normalize the rows of $\BC$. Given $\BC \Geq 0$,
+the $L_1$\hyp{}norm of each row is simply the sum of all its entries, so we can
+calculate the row norms by $\Bd \Eq \BY(\BY^T\Be)$. To obtain the normalized
+$\BC$, we simply scale the rows of $\BY$, and \smash{$\BCbar \Eq (\diag(\Bd)^
+{-1}\BY)\BY^T \Eq \BYbar\BY^T$}. These steps cost $\calO(NK)$.
+
+Next, we need to apply column pivoted QR to \smash{$\BCbar^T$} in order to
+identify the pivots as our anchor objects $\BS$. By taking the QR decomposition
+$\BY \Eq \BQ\BR$, $\BCbar^T$ can be further transformed into $\BQ\BR\BYbar^T$.
+Notice that $\BCbar^T$ is an orthogonal embedding of $\BX^T = \BR\BYbar^T$ onto
+a higher-dimensional space, which preserves the column $L_2$-norms. Lemma 
+\ref{lem:qrequiv} shows that column pivoted QR on $\BCbar^T$ and on
+$\BR\BYbar^T$ are equivalent, which allows us to lower the computation cost from
+$\calO(N^2K)$ to $\calO(NK^2)$.
 
 \begin{lemma}\label{lem:qrequiv}
   Let $\BS$ be the set of pivots that have been selected by column pivoted QR on
@@ -84,7 +83,7 @@ $\calO(N^2K)$ to $\calO(NK^2)$.
   decomposition for the columns of $\BCbar$. For any remaining row $i\in 
   [N]\setminus S$,
   \begin{equation}
-  	\|(I-\BP\BP^T)\BXbar_{i\ast}^T\|_2 = \|(I-(\BQ\BP)(\BQ\BP)^T)\BCbar_
+  	\|(\BI-\BP\BP^T)\BXbar_{i\ast}^T\|_2 = \|(\BI-(\BQ\BP)(\BQ\BP)^T)\BCbar_
   	{i\ast}^T\|_2
   \end{equation}
   Therefore, the next column pivot is identical for $\BCbar^T$ and $\BXbar^T$. 
@@ -96,22 +95,23 @@ $\calO(N^2K)$ to $\calO(NK^2)$.
 \begin{proof}
   Because both $\BQ$ and $\BP$ have orthonormal columns,
   \begin{equation}
-    (\BQ\BP)^T(\BQ\BP) = \BP^T(\BQ^T\BQ)\BP = \BP^T\BP = I
+    (\BQ\BP)^T(\BQ\BP) = \BP^T(\BQ^T\BQ)\BP = \BP^T\BP = \BI
   \end{equation}
   Thus, $\BQ\BP$ and $\BT$ forms the QR decomposition of $\BCbar_{\BS\ast}^T$.
-  The residual of a remaining column $i\in[N]\setminus S$ is $(I-(\BQ\BP)(\BQ
-  \BP)^T) \BCbar_{i\ast}^T$ and $(I-\BP\BP^T)\BXbar_{i\ast}^T$ for $\BCbar^T$
+  The residual of a remaining column $i\in[N]\setminus S$ is $(\BI-(\BQ\BP)(\BQ
+  \BP)^T) \BCbar_{i\ast}^T$ and $(\BI-\BP\BP^T)\BXbar_{i\ast}^T$ for $\BCbar^T$
   and $\BXbar^T$, respectively. Simplify the former gives us
   \begin{align*}
-    &(I-(\BQ\BP)(\BQ\BP)^T)\BCbar_{i\ast}^T \\
-    ={} & (I-(\BQ\BP)(\BQ\BP)^T)\BQ\BXbar_{i\ast}^T \\
+    &(\BI-(\BQ\BP)(\BQ\BP)^T)\BCbar_{i\ast}^T \\
+    ={} & (\BI-(\BQ\BP)(\BQ\BP)^T)\BQ\BXbar_{i\ast}^T \\
     ={} & \BQ\BXbar_{i\ast}^T - \BQ\BP\BP^T\BQ^T\BQ\BXbar_{i\ast}^T\\
-    ={} & \BQ(I-\BP\BP^T)\BXbar_{i\ast}^T
+    ={} & \BQ(\BI-\BP\BP^T)\BXbar_{i\ast}^T
   \end{align*}
   Finally,
   \begin{equation}\label{eqn:normpres}
-    \|(I-(\BQ\BP)(\BQ\BP)^T)\BCbar_{i\ast}^T\|_2^2 = \BXbar_{i\ast}(I-\BP\BP^T)
-    \BQ^T\BQ(I-\BP\BP^T)\BXbar_{i\ast}^T = \|(I-\BP\BP^T)\BXbar_{i\ast}^T\|_2^2
+    \|(\BI-(\BQ\BP)(\BQ\BP)^T)\BCbar_{i\ast}^T\|_2^2 = \BXbar_{i\ast}
+    (\BI-\BP\BP^T) \BQ^T\BQ(I-\BP\BP^T)\BXbar_{i\ast}^T = \|
+    (\BI-\BP\BP^T)\BXbar_{i\ast}^T\|_2^2
   \end{equation}
   Because the next pivot is selected as the column whose residual has the
   largest $L_2$\hyp{}norm, Eq. \ref{eqn:normpres} indicates that the same pivot
@@ -140,15 +140,15 @@ memory when $N$ becomes sufficiently large. In Algorithm \ref{alg:enn}, $\BC$
 only appears in the initial truncated eigen\hyp{}decomposition, after which we
 maintain the compressed operator $\BC_{op}$ independent of it. On the other
 hand, we just need the matrix\hyp{}vector multiplication by $\BC$ for the
-iterative methods in initialization. Using the generative formula in Equation (
-\ref{eqn:unbiased}), we are able to implicitly apply $\BC$ to vectors as an
+iterative methods in initialization. Using the generative formula in Eq. 
+\ref{eqn:unbiased}, we are able to implicitly apply $\BC$ to vectors as an
 outer\hyp{}product plus diagonal operator, in terms of $\BH$, at $\calO(NMK)$
 computation cost. To further reduce the number of times the operator is applied,
 we adopt the one-pass randomized eigen\hyp{}decomposition by Halko et al. 
 \cite{halko2011finding}. This technique enables us to initialize with a single
 pass over the dataset, without concurrently storing the entire $\BH$ in memory.
-A limitation is when the number of clusters is large and the gap between the $K$
-\hyp{}th eigenvalue and the ones below is small, we will have to incorporate a
-few power iterations for refinement, as suggested by the original paper. This
-will result in a multi\hyp{}pass method, but still far more efficient on large
-object size and parallelization-friendly.
+A limitation is when the number of clusters is large and the gap between the
+$K\mathrm{\hyp{}th}$ eigenvalue and the ones below is small, we will have to
+incorporate a few power iterations for refinement, as suggested by the original
+paper. This will result in a multi\hyp{}pass method, but still far more
+efficient on large object size and parallelization-friendly.

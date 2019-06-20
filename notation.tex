@@ -1,9 +1,12 @@
 % Math Bold
 \newcommand{\Bb}{\bm{b}}
+\newcommand{\Bc}{\bm{c}}
 \newcommand{\Bd}{\bm{d}}
 \newcommand{\Be}{\bm{e}}
 \newcommand{\Bh}{\bm{h}}
 \newcommand{\Bhhat}{\smash{\hat{\bm{h}}}}
+\newcommand{\Br}{\bm{r}}
+\newcommand{\Brhat}{\smash{\hat{\bm{r}}}}
 \newcommand{\Bx}{\bm{x}}
 \newcommand{\By}{\bm{y}}
 \newcommand{\BA}{\bm{A}}
@@ -28,28 +31,59 @@
 \newcommand{\BXbar}{\overline{\bm{X}}}
 \newcommand{\BY}{\bm{Y}}
 \newcommand{\BYbar}{\overline{\bm{Y}}}
+\newcommand{\BZ}{\bm{Z}}
+\newcommand{\BZtilde}{\widetilde{\bm{Z}}}
 
+\newcommand{\Bzeta}{\bm{\zeta}}
 \newcommand{\BLambda}{\bm{\Lambda}}
+\newcommand{\BPhi}{\bm{\Phi}}
+\newcommand{\BPi}{\bm{\Pi}}
+\newcommand{\BTheta}{\bm{\Theta}}
 
 % Math Blackboard Bold
 \newcommand{\BBR}{\mathbb{R}}
 
 % Math Relation
 \newcommand{\Eq}{\mathrel{=}}
-\newcommand{\Geq}{\mathrel{\geq}}
-\newcommand{\In}{\mathrel{\in}}
+\newcommand{\Leq}{\mathrel{\leq}}
 \newcommand{\Minus}{\mathrel{-}}
 \newcommand{\Plus}{\mathrel{+}}
 \newcommand{\Times}{\mathrel{\times}}
 
+% Math Binary
+\newcommand{\Geq}{\mathbin{\geq}}
+\newcommand{\Sim}{\mathbin{\sim}}
+
 % Math Calligraphy
+\newcommand{\calC}{\mathcal{C}}
 \newcommand{\calO}{\mathcal{O}}
 \newcommand{\NN}{\mathcal{NN}}
 \newcommand{\NOR}{\mathcal{NOR}}
 \newcommand{\PSD}{\mathcal{PSD}}
 
 % Math Operator
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\dist}{dist}
+\DeclareMathOperator{\Span}{Span}
 \DeclareMathOperator{\tr}{tr}
 \DeclareMathOperator{\var}{var}
+\DeclareMathOperator{\In}{\in}
+\DeclareMathOperator{\Proj}{Proj}
+\DeclareMathOperator{\Sec}{s}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+% Chemistry Unit
+\DeclareMathOperator{\au}{au}
+\DeclareMathOperator{\Ha}{Ha}
+\DeclareMathOperator{\HaPA}{\si{Ha/atom}}
+\DeclareMathOperator{\HaPB}{\si{Ha/Bohr}}
+\DeclareMathOperator{\HaPps}{\si{Ha/ps}}
+\DeclareMathOperator{\Kelvin}{K}
+
+% Helper Command
+\newcommand{\numintitle}[1]{\texorpdfstring{#1}{}}
+\newcommand{\ph}{\phantom{ }}
 
