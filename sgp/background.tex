@@ -1,0 +1,69 @@
+A Gaussian process (GP) is a collection of random variables, any finite number
+of which have a joint Gaussian distribution \citep[e.g.,][]{rasmussen06}. A GP
+can be used to define a distribution over functions $f(x) \sim \GP(\,\mu
+(x)\,,\,k(x, x'))$, where each function value is a random variable indexed by $x
+\In \BBR^d$, and $\mu\Colon \BBR^d \mathbin{\rightarrow} \BBR$ and $k\Colon
+\BBR^d \times\BBR^d\mathbin{\rightarrow} \BBR$ are the mean and covariance
+functions of the process.
+
+The covariance function is often chosen to be an RBF or Mat\'ern kernel (see the
+supplementary material for more details). We denote any kernel hyperparameters
+by the vector $\theta$. To be concise we will generally not explicitly denote
+the dependence of $k$ and associated matrices on $\theta$.
+
+For any locations $X = \{x_1,\ldots,x_n\} \subset \BBR^d$, $f_X \Sim \calN
+(\mu_X, \K{XX})$ where $f_X$ and $\mu_X$ represent the vectors of function
+values for $f$ and $\mu$ evaluated at each of the $x_i \In X$, and $\K{XX}$ is
+the matrix whose $(i,j)$ entry is $k(x_i, x_j)$. Suppose we have a vector of
+corresponding function values $y \In \BBR^n$, where each entry is contaminated
+by independent Gaussian noise with variance $\sigma^2$. Under a Gaussian process
+prior depending on the covariance hyperparameters $\theta$, the log marginal
+likelihood is given by
+\begin{equation}\label{eqn:mloglik}
+    \calL(\theta|y) = -\frac{1}{2}\left[(y-\mu_X)^T\alpha + \log\abs{\Ktil{XX}}
+    + n\log 2\pi\right],
+\end{equation}
+where $\alpha = \Ktil{XX}^{-1}(y-\mu_X)$ and $\Ktil{XX} = \K{XX} +\sigma^2I$.
+Optimization of (\ref{eqn:mloglik}) is expensive, since the cheapest way of
+evaluating $\log\abs{\Ktil{XX}}$ and its derivatives without taking advantage
+of the structure of $\Ktil{XX}$ involves computing the $\calO(n^3)$ Cholesky
+factorization of $\Ktil{XX}$. $\calO(n^3)$ computations is too expensive for
+inference and learning beyond even just a few thousand points.
+
+A popular approach to GP scalability is to replace the exact kernel $k(x, z)$
+by an approximate kernel that admits fast computations 
+\cite{quinonero2005unifying}. Several methods approximate $k(x, z)$ via {\em
+inducing points} $U = \{u_j\}_{j=1}^m \binsubset \BBR^d$. An example is the
+subset of regressor (SoR) kernel:
+\begin{equation}\label{eqn:SoR}
+    k^{\SoR}(x, z) = \K{xU}\K{UU}^{-1}\K{Uz},
+\end{equation}
+which is a low-rank approximation \cite{silverman1985some}. The SoR matrix
+$\Ktil{XX}^{\SoR} \In \BBR^{n \times n}$ has rank at most $m$, allowing us to
+solve linear systems involving $\Ktil{XX}^{\SoR} = \K{XX}^{\SoR} + \sigma^2I$
+and to compute $\log\abs{\Ktil{XX}^{\SoR}}$ in $\calO(m^2 n + m^3)$ time.
+Another popular kernel approximation is the fully independent training
+conditional (FITC), which is a diagonal correction of SoR so that the diagonal
+is the same as for the original kernel \cite{snelson2006sparse}.  Thus kernel
+matrices from FITC have low-rank plus diagonal structure. This modification has
+had exceptional practical significance, leading to improved point predictions
+and much more realistic predictive uncertainty \cite{quinonero2005unifying,
+quinonero2007}, making FITC arguably the most popular approach for scalable
+Gaussian processes.
+
+\citet{wilson2015kernel} provides a mechanism for fast MVMs through proposing
+the structured kernel interpolation (SKI) approximation,
+\begin{equation}\label{eqn:ski}
+    \K{XX} \approx W \K{UU} W^{T},
+\end{equation}
+where $W$ is an $n$-by-$m$ matrix of interpolation weights; the authors of~
+\cite{wilson2015kernel} use local cubic interpolation so that $W$ is sparse.
+The sparsity in $W$ makes it possible to naturally exploit algebraic structure
+(such as Kronecker or Toeplitz structure) in $\K{UU}$ when the inducing points
+$U$ are on a grid, for extremely fast matrix vector multiplications with the
+approximate $\K{XX}$ even if the data inputs $X$ are arbitrarily located. For
+instance, if $\K{UU}$ is Toeplitz, then each MVM with the approximate $\K{XX}$
+costs only $\calO(n + m \log m)$. By contrast, placing the inducing points $U$
+on a grid for classical inducing point methods, such as SoR or FITC, does not
+result in substantial performance gains, due to the costly cross-covariance
+matrices $\K{xU}$ and $\K{Uz}$.

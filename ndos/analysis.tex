@@ -1,0 +1,100 @@
+\subsection{KPM Approximation Error}
+This section provides an error bound for our regularized DOS approximation
+$K_\sigma\ast\mu$. We will start with the following theorem.
+\begin{theorem}[\bf{Jackson's Theorem~\cite{jackson1911genauigkeit}}]
+\label{thm:Jackson_damping}
+	If $f:[-1,1]\rightarrow \BBR$ is Lipschitz continuous with constant $L$, its
+	best degree $M$ polynomial approximation $\hat{f}^M$ has an $L_\infty$ 
+	error of at most $6L/M$. The approximation can be constructed as
+	\begin{equation}
+		\hat{f}^M = \sum_{m=0}^MJ_mc_mT_m(x)\,,
+	\end{equation}
+	where $J_m$ are Jackson smoothing factors and $c_m$ are the Chebyshev
+	coefficients.
+\end{theorem}
+We can pick a smooth mollifier $K$ with $\text{Lip}(K)=1$. For any $\nu\in\BBR$
+and $\lambda\in [-1,1]$ there exists a degree $M$ polynomial such that 
+\begin{equation}
+	\abs{K_\sigma(\nu-\lambda)-\widehat{K}^{M}_\sigma(\nu-\lambda)} < \frac{6L}
+	{M\sigma}\,.
+\end{equation}
+Define $\hat{\mu}^M = \sum_{m=0}^MJ_md_m\phi_m$ to be the truncated DOS
+series,
+\begin{equation}
+	\int_{-1}^1 \hat{f}^M(\lambda)\mu(\lambda)d\lambda = \int_{-1}^1f
+	(\lambda)\hat{\mu}^M(\lambda)d\lambda = \sum_{m=0}^MJ_mc_md_m\,.
+\end{equation}
+Therefore,
+\begin{align*}
+	\norm{K_\sigma\ast(\mu-\hat{\mu}^M)}_\infty
+	=& \max_\nu\abs{\int_{-1}^1K_\sigma(\nu-\lambda)(\mu(\lambda)-\hat{\mu}^M 
+	(\lambda))d\lambda}\\
+	\leq& \max_\nu\int_{-1}^1\abs{K_\sigma(\nu-\lambda)-\widehat{K}^M_\sigma
+	(\nu-\lambda)}\mu(\lambda)d\lambda \\
+	\leq& \frac{6L}{M\sigma}\,.
+\end{align*}
+Consider $\tilde{\mu}^M$ to be the degree $M$ approximation from KPM,
+\begin{equation}
+	\norm{K_\sigma\ast(\mu-\tilde{\mu}^M)}_\infty \leq \norm{K_\sigma\ast(\mu- 
+	\hat{\mu}^M)}_\infty+ \norm{K_\sigma}_\infty\norm{\,\hat{\mu}^M - 
+	\tilde{\mu}^M}_1\,.
+\end{equation}
+If we use a probe $z$ with independent standard normal entries for the
+trace estimation,
+\begin{equation}
+	\tilde{\mu}(\lambda) = \sum_{i=1}^Nw_i^2\delta(\lambda-\lambda_i)
+\end{equation}
+where $w=Q^Tz$ is the weight for $z$ in the eigenbasis. Hence
+\begin{equation}
+	\norm{\hat{\mu}^M-\tilde{\mu}^M}_1 \leq \sum_{i=1}^N \abs{1-w_i^2}\,.
+\end{equation}
+Finally,
+\begin{equation}
+	\BBE\left[\norm{K_\sigma\ast(\mu-\tilde{\mu}^M)}\right]\leq \frac{1}
+	{\sigma}\left(\frac{6L}{M}+\norm{K}_\infty\BBE\left[
+	\abs{1-w_1^2}\right]\right)\,.
+\end{equation}
+If we take $N_z$ independent probe vectors, then $N_zw_1^2\sim\chi^2(N_z)$,
+which means the expectation decays asymptotically like $\sqrt{2 / (\pi N_z)}$.
+
+\subsection{Perturbation Analysis}
+In this section, we limit our attention to symmetric graph matrix $H$.
+Extracting graph information using DOS, whether as a distribution for functions
+on a graph or as a direct feature in the form of spectral moments, requires
+stability under small perturbations. In the case of removing/adding a few 
+number of nodes/edges, the Cauchy Interlacing Theorem~\cite{magnus1988matrix}
+gives a bound on each individual new eigenvalue by the old ones. For example, 
+if we remove $r\ll N$ nodes to get a new graph matrix $
+\widetilde{H}$, then
+\begin{equation}\label{eqn:interlacing}
+	\lambda_i(H)\leq \lambda_i(\widetilde{H})\leq \lambda_{i+r}(H)\quad\text{for
+	}\quad i\leq N-r\,.
+\end{equation}
+However, this bound may not be helpful when the impact of the change is not
+reflected by its size. Hence, we provide a theorem that relates the Wasserstein
+distance (see \cref{eqn:waisserstein}) change and the Frobenius norm of
+the perturbation. Without loss of generality, we assume the eigenvalues of $H$
+lie in $[-1,1]$ already.
+
+\begin{theorem}
+	Suppose $\widetilde{H} = H + \delta H$ is the perturbed graph matrix with
+	spectral density $\tilde{\mu}$, then
+	\begin{equation*}
+		W_1(\mu, \tilde{\mu}) \leq \norm{\delta H}_F
+	\end{equation*}
+\end{theorem}
+\begin{proof}
+	Let $\calL$ be the space of Lipschitz functions with $f(0)=0$.
+	\begin{align*}\label{eqn:proof1}
+		W_1(\mu, \tilde{\mu})=& \sup_{f\in\calL, \Lip(f)=1} \int f(\lambda) (\mu
+		(\lambda)-\tilde{\mu}(\lambda))d\lambda \\
+		=&\frac{1}{N}\sup_{f\in\calL, \Lip(f)=1}\tr(f(H)-f(\widetilde{H}))\\
+		\leq& \sup_{f\in\calL, \Lip(f)=1, \|v\|=1} v^T(f(H)-f(\widetilde{H}))v\,.
+	\end{align*}
+	By Theorem 3.8 from Higham~\cite{higham2008functions}, the perturbation on
+	$f(H)$ is bounded by the Fr\'{e}chet derivative,
+	\begin{equation}
+		\norm{f(H) - f(\widetilde{H})}_2\leq \Lip(f)\|\delta H\|_F + \calo(\|\delta
+		H\|_F).
+	\end{equation}
+\end{proof}

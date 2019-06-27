@@ -26,7 +26,7 @@ FIGS =
 
 PDFFIGS = $(FIGS:.eps=.pdf)
 
-BIBFILE = $(DOC).bib
+BIBFILE = references.bib
 #
 # Ignore this if you're not using bibtex. Change the $(DOC) part if your bib
 # file has a different name from your document

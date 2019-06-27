@@ -1,0 +1,52 @@
+In addition to the usual errors from sources such as solver termination criteria
+and floating point arithmetic, our approach to kernel learning involves several
+additional sources of error: we approximate the true kernel with one that
+enables fast MVMs, we approximate traces using stochastic estimation, and we
+approximate the actions of $\log(\Ktil{})$ and $\Ktil{}^{-1}$ on probe
+vectors.
+
+We can compute first-order estimates of the sensitivity of the log likelihood to
+perturbations in the kernel using the same stochastic estimators we use for the
+derivatives with respect to hyperparameters. For example, if $\calL^{\Ref}$
+is the likelihood for a reference kernel $\Ktil{}^{\Ref} = \Ktil{} + E$, then
+\begin{equation}
+  \calL^{\Ref}(\theta|y) = \calL(\theta|y) - \frac{1}{2} \left(\BBE\left
+  [g^TEz\right] - \alpha^T E \alpha \right) + \calO(\norm{E}^2)\,,
+\end{equation}
+and we can bound the change in likelihood at first order by $\norm{E}\left(
+\norm{g}\norm{z} + \norm{\alpha}^2 \right)$. Given bounds on the norms of
+$\partial E/\partial \theta_i$, we can similarly estimate changes in the
+gradient of the likelihood, allowing us to bound how the marginal likelihood
+hyperparameter estimates depend on kernel approximations.
+
+If $\Ktil{} = U \Lambda U^T + \sigma^2 I$, the Hutchinson trace estimator has
+known variance~\cite{Avron:2011:Randomized}
+\begin{equation}
+  \Var\left[z^T \log(\Ktil{}) z\right] = \sum_{i \neq j} \left[\log(\Ktil
+  {})\right]_{ij}^2 \leq \sum_{i=1}^n \log(1 + \lambda_j/\sigma^2)^2\,.
+\end{equation}
+If the eigenvalues of the kernel matrix without noise decay rapidly enough
+compared to $\sigma$, the variance will be small compared to the magnitude of
+$\tr(\log \Ktil{}) = 2n\log \sigma + \sum_{i=1}^n\log(1+\lambda_j/\sigma^2)$.
+Hence, we need fewer probe vectors to obtain reasonable accuracy than one would
+expect from bounds that are blind to the matrix structure. In our experiments,
+we typically only use 5--10 probes --- and we use the sample variance across
+these probes to estimate {\em a posteriori} the stochastic component of the
+error in the log likelihood computation.  If we are willing to estimate the
+Hessian of the log likelihood, we can increase rates of convergence for finding
+kernel hyperparameters.
+
+The Chebyshev approximation scheme requires $\calO(\!\!\sqrt{\kappa}
+\log(\kappa/\epsilon))$ steps to obtain an $\calO(\epsilon)$ approximation error
+in computing $z^T \log(\Ktil{}) z$, where $\kappa = \lambda_{\max}/\lambda_
+{\min}$ is the condition number of $\Ktil{}$~\cite{han2015large}. This behavior
+is independent of the distribution of eigenvalues within the interval $[\lambda_
+{\min}, \lambda_{\max}]$, and is close to optimal when eigenvalues are spread
+quasi-uniformly across the interval. Nonetheless, when the condition number is
+large, convergence may be quite slow.  The Lanczos approach converges at least
+twice as fast as Chebyshev in general~\cite[Remark 1]{ubarufast}, and converges
+much more rapidly when the eigenvalues are {\em not} uniform within the
+interval, as is the case with log determinants of many kernel matrices.  Hence,
+we recommend the Lanczos approach over the Chebyshev approach in general.  In
+all of our experiments, the error associated with approximating $z^T \log(\Ktil
+{}) z$ by Lanczos was dominated by other sources of error.

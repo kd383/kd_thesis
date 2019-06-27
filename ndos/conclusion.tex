@@ -1,0 +1,29 @@
+In this paper, we make the computation of spectral densities a practical tool
+for the analysis of large real-world network. Our approach borrows from methods
+in solid state physics, but with adaptations that improve performance in the
+network analysis setting by special handling of graph motifs that leave
+distinctive spectral fingerprints. We show that the spectral densities are
+stable to small changes in the graph, as well as providing an analysis of the
+approximation error in our methods. We illustrate the efficiency of our
+approach by treating graphs with tens of millions of nodes and billions of edges
+using only a single compute node. The method provides a compelling visual
+fingerprint of a graph, and we show how this fingerprint can be used for tasks
+such as model verification.
+
+Our approach opens the door for the use of complete spectral information in
+large-scale network analysis. It provides a framework for scalable computation
+of quantities already used in network science, such as common centrality
+measures and graph connectivity indices (such as the Estrada index) that can be
+expressed in terms of the diagonals and traces of matrix functions. But we
+expect it to serve more generally to define new families of features that
+describe graphs and the roles nodes play within those graphs. We have shown that
+graphs from different backgrounds demonstrate distinct spectral
+characteristics, and thus can be clustered based on those. Looking at LDOS
+across nodes for role discovery, we can identify the ones with high similarity
+in their local structures. Moreover, extracting nodes with large weights at
+various points of the spectrum uncovers motifs and symmetries. In the future, we
+expect to use DOS/LDOS as graph features for applications in graph clustering,
+graph matching, role classification, and other tasks.
+
+\noindent\textbf{Acknowledgments.} We thank NSF DMS-1620038 for supporting this
+work.

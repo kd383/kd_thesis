@@ -7,8 +7,11 @@
 \newcommand{\Bhhat}{\smash{\hat{\bm{h}}}}
 \newcommand{\Br}{\bm{r}}
 \newcommand{\Brhat}{\smash{\hat{\bm{r}}}}
+\newcommand{\Bu}{\bm{u}}
+\newcommand{\Bw}{\bm{w}}
 \newcommand{\Bx}{\bm{x}}
 \newcommand{\By}{\bm{y}}
+\newcommand{\Bz}{\bm{z}}
 \newcommand{\BA}{\bm{A}}
 \newcommand{\BB}{\bm{B}}
 \newcommand{\BBreve}{\smash{\breve{\bm{B}}}}
@@ -27,6 +30,7 @@
 \newcommand{\BT}{\bm{T}}
 \newcommand{\BU}{\bm{U}}
 \newcommand{\BV}{\bm{V}}
+\newcommand{\BW}{\bm{W}}
 \newcommand{\BX}{\bm{X}}
 \newcommand{\BXbar}{\overline{\bm{X}}}
 \newcommand{\BY}{\bm{Y}}
@@ -34,46 +38,83 @@
 \newcommand{\BZ}{\bm{Z}}
 \newcommand{\BZtilde}{\widetilde{\bm{Z}}}
 
+\newcommand{\Balpha}{\bm{\alpha}}
+\newcommand{\Btheta}{\bm{\theta}}
 \newcommand{\Bzeta}{\bm{\zeta}}
 \newcommand{\BLambda}{\bm{\Lambda}}
 \newcommand{\BPhi}{\bm{\Phi}}
 \newcommand{\BPi}{\bm{\Pi}}
 \newcommand{\BTheta}{\bm{\Theta}}
 
+\newcommand{\BfX}{\bm{f_X}}
+\newcommand{\BmuX}{\bm{\mu_X}}
+\newcommand{\BK}[1]{\bm{K_{#1}}}
+\newcommand{\BKtil}[1]{\bm{\tilde{K}_{#1}}}
+% \newcommand{\BKtil}[1]{\tilde{\bm{K}}_{\!\textit{\textbf{#1}}}}
+
 % Math Blackboard Bold
 \newcommand{\BBR}{\mathbb{R}}
 
 % Math Relation
 \newcommand{\Eq}{\mathrel{=}}
-\newcommand{\Leq}{\mathrel{\leq}}
 \newcommand{\Minus}{\mathrel{-}}
 \newcommand{\Plus}{\mathrel{+}}
-\newcommand{\Times}{\mathrel{\times}}
 
 % Math Binary
+\newcommand{\binsubset}{\mathbin{\subset}}
+\newcommand{\Colon}{\mathbin{:}}
 \newcommand{\Geq}{\mathbin{\geq}}
+\newcommand{\Leq}{\mathrel{\leq}}
 \newcommand{\Sim}{\mathbin{\sim}}
+\newcommand{\Times}{\mathrel{\times}}
+\newcommand{\To}{\mathbin{\to}}
 
 % Math Calligraphy
 \newcommand{\calC}{\mathcal{C}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calN}{\mathcal{N}}
 \newcommand{\calO}{\mathcal{O}}
 \newcommand{\NN}{\mathcal{NN}}
 \newcommand{\NOR}{\mathcal{NOR}}
 \newcommand{\PSD}{\mathcal{PSD}}
+\newcommand{\GP}{\mathcal{GP}}
+\newcommand{\calo}{\mathchoice
+	{{\scriptstyle\mathcal{O}}}% \displaystyle
+	{{\scriptstyle\mathcal{O}}}% \textstyle
+	{{\scriptscriptstyle\mathcal{O}}}% \scriptstyle
+	{\scalebox{.6}{$\scriptscriptstyle\mathcal{O}$}}%\scriptscriptstyle
+}
 
 % Math Operator
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\dist}{dist}
-\DeclareMathOperator{\Span}{Span}
+\DeclareMathOperator{\dx}{\partial\!}
+\DeclareMathOperator{\ddx}{\partial^2\!}
 \DeclareMathOperator{\tr}{tr}
-\DeclareMathOperator{\var}{var}
+\DeclareMathOperator{\vol}{vol}
+\DeclareMathOperator{\BBE}{\mathbb{E}}
 \DeclareMathOperator{\In}{\in}
+\DeclareMathOperator{\Lip}{Lip}
 \DeclareMathOperator{\Proj}{Proj}
+\DeclareMathOperator{\Ref}{ref}
 \DeclareMathOperator{\Sec}{s}
+\DeclareMathOperator{\SoR}{SoR}
+\DeclareMathOperator{\Span}{Span}
+\DeclareMathOperator{\Var}{Var}
 \newcommand{\abs}[1]{\left\lvert#1\right\rvert}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+% Graph
+
+\newcommand{\Erdos}{Erd\H{o}s}
+\newcommand{\ErdosRenyi}{Erd\H{o}s-R\'enyi}
+
+% Gaussian Processes
+\newcommand{\K}[1]{K_{#1}}
+\newcommand{\Ktil}[1]{\tilde{K}_{#1}}
+\DeclareMathOperator{\mile}{mile}
 
 % Chemistry Unit
 \DeclareMathOperator{\au}{au}
@@ -87,3 +128,14 @@
 \newcommand{\numintitle}[1]{\texorpdfstring{#1}{}}
 \newcommand{\ph}{\phantom{ }}
 
+% Color
+\definecolor{burgundy}{RGB}{140,0,26}
+
+% Environment
+\newcommand{\algorithmnormal}[1]{
+	\begin{algorithm}
+		\normalspacing{
+			#1
+		}
+	\end{algorithm}
+}

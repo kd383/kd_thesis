@@ -1,0 +1,87 @@
+Spectral theory is a powerful analysis tool in graph theory~
+\cite{ctekovic1998spectra,chung1997spectral,chung2006complex}, geometry~
+\cite{chavel1984eigenvalues}, and physics~\cite{jackson2006math}. One follows
+the same steps in each setting:
+\begin{itemize}
+	\item Identify an object of interest, such as a graph or manifold;
+	\item Associate the object with a matrix or operator, often the generator
+  of a linear dynamical system or the Hessian of a quadratic form over
+  functions on the object;
+	\item Connect spectral properties of the matrix or operator to
+  structural properties of the original object.
+\end{itemize}
+In each case, the {\em complete} spectral decomposition is enough to
+recover the original object; the interesting results relate structure
+to {\em partial} spectral information.
+
+Many spectral methods use extreme eigenvalues and associated eigenvectors. 
+These are easy to compute by standard methods, and are easy to interpret in
+terms of the asymptotic behavior of dynamical systems or the solutions to
+quadratic optimization problems with quadratic constraints.  Several network
+centrality measures, such as PageRank~\cite{page1999pagerank}, are expressed via
+the stationary vectors of transition matrices, and the rate of convergence to
+stationarity is bounded via the second-largest eigenvalue.  In geometry and
+graph theory, Cheeger's inequality relates the second-smallest eigenvalue of a
+Laplacian or Laplace-Beltrami operator to the size of the smallest bisecting
+cut~\cite{cheeger1969lower,mohar1989isoperimetric}; in the graph setting, the
+associated eigenvector (the Fiedler vector) is the basis for spectral algorithms
+for graph partitioning~\cite{pothen1990partitioning}.  Spectral algorithms for
+graph coordinates and clustering use the first few eigenvectors of a transition
+matrix or (normalized) adjacency or Laplacian~\cite{belkin2001laplacian,
+ng2002spectral}. For a survey of such approaches in network science, we refer
+to~\cite{chung2006complex}.
+
+Mark Kac popularized an alternate approach to spectral analysis in an expository
+article~\cite{kac1966hear} in which he asked whether one can determine the shape
+of a physical object (Kac used a drum as an example) given the spectrum of the
+Laplace operator; that is, can one ``hear'' the shape of a drum?  One can ask a
+similar question in graph theory: can one uniquely determine the structure of a
+network from the spectrum of the Laplacian or another related matrix?  Though
+the answer is negative in both cases~\cite{gordon1992cannot,
+ctekovic1998spectra}, the spectrum is enormously informative even without
+eigenvector information.  Unlike the extreme eigenvalues and vectors,
+eigenvalues deep in the spectrum are difficult to compute and to interpret, but
+the overall distribution of eigenvalues --- known as the spectral density or
+density of states --- provides valuable structural information.  For example,
+knowing the spectrum of a graph adjacency matrix is equivalent to knowing
+$\tr(A^k)$, the number of closed walks of any given length $k$. In some cases,
+one wants {\em local} spectral densities in which the eigenvalues also have
+positive weights associated with a location. Following Kac, this would give us
+not only the frequencies of a drum, but also amplitudes based on where the drum
+is struck.  In a graph setting, the local spectral density of an adjacency
+matrix at node $j$ is equivalent to knowing $(A^k)_{jj}$, the number of closed
+walks of any given length $k$ that begin and end at the node.
+
+Unfortunately, the analysis of spectral densities of networks has been
+limited by a lack of scalable algorithms.  While the normalized
+Laplacian spectra of \ErdosRenyi\ random graphs have an approximately
+semicircular distribution~\cite{wigner1958distribution}, and the spectral
+distributions for other popular scale-free and small-world random graph models
+are also known~\cite{farkas2001spectra}, there has been relatively little work
+on computing spectral densities of large ``real-world'' networks. Obtaining the
+full eigendecomposition is $\calO(N^3)$ for a graph with $N$ nodes, which is
+prohibitive for graphs of more than a few thousand nodes.  In prior work,
+researchers have employed methods, such as thick-restart Lanczos, that still do
+not scale to very large graphs~\cite{farkas2001spectra}, or heuristic
+approximations with no convergence analysis~\cite{banerjee2008spectrum}. It is
+only recently that clever computational methods were developed simply to 
+\emph{test} for hypothesized power laws in the spectra of large real-world
+matrices by computing only \emph{part} of the spectrum~
+\cite{eikmeier2017revisiting}.
+
+In this paper, we show how methods used to study densities of states in
+condensed matter physics~\cite{weisse2006kernel} can be used to study spectral
+densities in networks.  We study these methods for both the {\em global} density
+of states and for {\em local} densities of states weighted by specific
+eigenvector components. We adapt these methods to take advantage of
+graph-specific structure not present in most physical systems, and analyze the
+stability of the spectral density to perturbations as well as the convergence of
+our computational methods.  Our methods are remarkably efficient, as we
+illustrate by computing densities for graphs with billions of edges and tens of
+millions of nodes on a single cloud compute node. We use our methods for
+computing these densities to create compelling visual fingerprints that
+summarize a graph. We also show how the density of states reveals graph
+properties that are not evident from the extremal eigenvalues and eigenvectors
+alone, and use it as a tool for fast computation of standard measures of graph
+connectivity and node centrality. This opens the door for the use of complete
+spectral information as a tool in large-scale network analysis.

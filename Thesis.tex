@@ -1,4 +1,3 @@
-\RequirePackage{ifpdf}
 \documentclass[phd,tocprelim]{cornell}
 %
 % tocprelim option must be included to put the roman numeral pages in the
@@ -22,7 +21,7 @@
 \usepackage{float}
 \usepackage{graphicx,pstricks}
 \usepackage{graphics}
-\usepackage{subfigure}
+\usepackage{subcaption}
 \usepackage{epsfig}
 
 % Bibtex
@@ -32,7 +31,7 @@
 \usepackage[ruled]{algorithm2e}
 
 % Others
-\usepackage{accents} 
+% \usepackage{accents}
 \usepackage{bm}
 \usepackage{booktabs}
 \usepackage[format=hang]{caption}
@@ -48,11 +47,13 @@
 \usepackage{palatino}
 \usepackage{placeins}
 \usepackage{siunitx}
+\usepackage{subdepth}
 \usepackage{threeparttable}
 \usepackage{txfonts}
 \usepackage{url}
 \usepackage{xcolor}
 \usepackage[pageanchor, hidelinks]{hyperref}
+\usepackage[capitalise]{cleveref}
 \def\pagedeclaration#1{\dotfill\hyperlink{page.#1}{Page\nobreakspace#1}}
 \setlength{\nomitemsep}{-\parsep}
 
@@ -62,7 +63,7 @@
 %the tolerance to 9999
 \tolerance=9999
 
-\bibliographystyle{plain}
+% \bibliographystyle{plain}
 %\bibliographystyle{IEEEbib}
 
 % \renewcommand{\caption}[1]{\singlespacing\hangcaption{#1}\normalspacing}
@@ -145,27 +146,31 @@ Your acknowledgements go here. Make sure it sits inside the brackets.
 
 \chapter{Introduction}
 	\label{ch1}
-	\input{./ch1.tex}
+	\input{./introduction.tex}
 
 \chapter{Network Density of States}
 	\label{ch2}
-	\input{./ch2.tex}
+	\input{./ndos.tex}
 
 \chapter{Scalable Gaussian Processes}
 	\label{ch3}
-	\input{./ch3.tex}
+	\input{./sgp.tex}
+
+\chapter{Scalable Gaussian Processes with Derivatives}
+	\label{ch4}
+	\input{./sgpd.tex}
 
 \chapter{Robust Large-Vocabulary Topic Modeling}
-	\label{ch4}
-	\input{./ch4.tex}
+	\label{ch5}
+	\input{./lrtm.tex}
 
 \chapter{Weighted K-Means for Electronic Structure Calculation}
-	\label{ch5}
-	\input{./ch5.tex}
+	\label{ch6}
+	\input{./cvt.tex}
 
 \chapter{Conclusion}
-	\label{ch6}
-	\input{./ch6.tex}
+	\label{ch7}
+	\input{./conclusion.tex}
 
 % \appendix
 

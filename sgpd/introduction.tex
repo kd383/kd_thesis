@@ -1,0 +1,66 @@
+Gaussian processes (GPs) provide a powerful learning framework where the 
+\emph{marginal likelihood} is the probability of data given only the kernel
+hyper-parameters.  The marginal likelihood automatically calibrates the model
+fit and complexity terms to favor the simplest models that explain the data
+\citep{rasmussen01, rasmussen06}. Computing the model fit term requires solving
+linear systems with the kernel matrix while the complexity term, or 
+\emph{Occam's factor}~\citep{mackay2003information}, is the log determinant of
+the kernel matrix. The exact kernel learning costs of $\calO(n^3)$ flops and the
+prediction cost of $\calO(n)$ flops per test point are clearly computationally
+infeasible for large datasets.  The situation becomes more challenging if we
+consider GPs with both function value and derivative information, in which case
+training and prediction become $\calO(n^3d^3)$ and $\calO(nd)$
+respectively~\citep[\S9.4]{rasmussen06}.
+
+Derivative information is important in many applications, including Bayesian
+Optimization (BO) \citep{wu2017bayesian}, implicit surface
+reconstruction \citep{macedo2011hermite}, and terrain reconstruction.  For many
+simulation models, derivatives may be computed at little extra cost via finite
+differences, complex step approximation, an adjoint method, or algorithmic
+differentiation \citep{forrester2008engineering}. But while many scalable
+approximation methods for Gaussian process regression have been proposed,
+scalable methods incorporating derivatives have received little attention. In
+this paper, we propose scalable methods for GPs with derivative information
+built on the {\em structured kernel interpolation} (SKI) framework~
+\citep{wilson2015kernel}, which uses local interpolation to map scattered data
+onto a large grid of inducing points, enabling fast MVMs using FFTs. As the
+uniform grids in SKI scale poorly to high-dimensional spaces, we also extend the
+structured kernel interpolation for products (SKIP) method, which approximates a
+high-dimensional product kernel as a Hadamard product of low rank Lanczos
+decompositions \citep{gardner2018product}. Both SKI and SKIP provide fast
+approximate kernel MVMs, which are a building block to solve linear systems with
+the kernel matrix and to approximate log determinants~\citep{dong2017scalable}.
+
+The specific contributions of this paper are:
+\begin{itemize}
+  \item We extend SKI to incorporate derivative information, enabling $\calO
+  (nd)$ complexity learning and $\calO(1)$ prediction per test points, relying
+  only on fast MVM with the kernel matrix.
+
+  \item We also extend SKIP, which enables scalable Gaussian process regression
+  with derivatives in high-dimensional spaces without grids.  Our approach
+  allows for $\calO(nd)$ MVMs.
+
+  \item We illustrate that preconditioning is critical for fast convergence of
+  iterations for kernel matrices with derivatives.  A pivoted Cholesky
+  preconditioner cuts the iterations to convergence by several orders of
+  magnitude when applied to both SKI and SKIP with derivatives.
+
+  \item We illustrate the scalability of our approach on several examples
+  including implicit surface fitting of the Stanford bunny, rough terrain
+  reconstruction, and Bayesian optimization.
+
+  \item We show how our methods, together with active subspace techniques, can
+  be used to extend Bayesian optimization to high-dimensional problems with
+  large evaluation budgets.
+
+  \item Code, experiments, and figures may be reproduced at 
+  \url{https://github.com/ericlee0803/GP_Derivatives}.
+\end{itemize}
+
+
+%% Outline
+We start in \cref{sgpdsec:bac} by introducing GPs with derivatives and kernel
+approximations.  In \cref{sgpdsec:met}, we extend SKI and SKIP to handle
+derivative information. In \cref{sgpdsec:exp}, we show representative
+experiments; and we conclude in \cref{sgpdsec:con}.

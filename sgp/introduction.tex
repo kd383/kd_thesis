@@ -1,0 +1,122 @@
+There is a pressing need for scalable machine learning approaches to extract
+rich statistical structure from large datasets. A common bottleneck --- arising
+in determinantal point processes \cite{kulesza2012determinantal}, Bayesian
+neural networks \cite{mackay1992bayesian}, model comparison 
+\cite{mackay2003information}, graphical models \cite{rue2005gaussian}, and
+Gaussian process kernel learning \cite{rasmussen06} --- is computing a log
+determinant over a large positive definite matrix. While we can approximate log
+determinants by existing stochastic expansions relying on matrix vector
+multiplications (MVMs), these approaches make assumptions, such as near-uniform
+eigenspectra \cite{boutsidis2015randomized}, which are unsuitable in machine
+learning contexts. For example, the popular RBF kernel gives rise to rapidly
+decaying eigenvalues. Moreover, while standard approaches, such as stochastic
+power series, have reasonable asymptotic complexity in the rank of the matrix,
+they require too many terms (MVMs) for the precision necessary in machine
+learning applications.
+
+Gaussian processes (GPs) provide a principled probabilistic kernel learning
+framework, for which a log determinant is of foundational importance.
+Specifically, the \emph{marginal likelihood} of a Gaussian process is the
+probability of data given only kernel hyper-parameters. This utility function
+for kernel learning compartmentalizes into automatically calibrated model fit
+and complexity terms --- called \emph{automatic Occam's razor} --- such that the
+simplest models which explain the data are automatically favored 
+\cite{rasmussen01, rasmussen06}, without the need for approaches such as
+cross-validation, or regularization, which can be costly, heuristic, and involve
+substantial hand-tuning and human intervention. The automatic complexity
+penalty, called the \emph{Occam's factor} \cite{mackay2003information}, is a log
+determinant of a kernel (covariance) matrix, related to the volume of solutions
+that can be expressed by the Gaussian process.
+
+Many current approaches to scalable Gaussian processes \cite[e.g.,][]
+{quinonero2005unifying, le2013fastfood, hensman2013uai} focus on inference
+assuming a fixed kernel, or use approximations that do not allow for very
+flexible kernel learning \cite{wilson2014thesis}, due to poor scaling with
+number of basis functions or inducing points. Alternatively, approaches which
+exploit algebraic structure in kernel matrices can provide highly expressive
+kernel learning \cite{wilson2014fast}, but are essentially limited to grid structured data.
+
+Recently, \citet{wilson2015kernel} proposed the {\em structured kernel
+interpolation} (SKI) framework, which generalizes structuring exploiting methods
+to arbitrarily located data.  SKI works by providing accurate and fast matrix
+vector multiplies (MVMs) with kernel matrices, which can then be used in
+iterative solvers such as linear conjugate gradients for scalable GP inference. 
+However, evaluating the marginal likelihood and its derivatives, for kernel
+learning, has followed a scaled eigenvalue approach \citep{wilson2014fast,
+wilson2015kernel} instead of iterative MVM approaches.  This approach can be
+inaccurate, and relies on a fast eigendecomposition of a structured matrix,
+which is not available in many consequential situations where fast MVMs are
+available, including: (i) additive covariance functions, (ii) multi-task
+learning, (iii) change-points \citep{herlands2016scalable}, and (iv) diagonal
+corrections to kernel approximations \citep{snelson2006sparse}.  Fiedler
+\citep{fiedler84hankelLoewner} and Weyl \citep{weyl1912} bounds have been used
+to extend the scaled eigenvalue approach \citep{flaxman2015fast,
+herlands2016scalable}, but are similarly limited.  These extensions are often
+very approximate, and do not apply beyond sums of two and three matrices, where
+each matrix in the sum must have a fast eigendecomposition.
+
+In machine learning there has recently been renewed interest in MVM based
+approaches to approximating log determinants, such as the Chebyshev 
+\citep{han2015large} and Lanczos \citep{ubarufast} based methods, although these
+approaches go back at least two decades in quantum chemistry computations 
+\citep{bai1998computing}. Independently, several authors have proposed various
+methods to compute derivatives of log determinants~\citep{mackay1997efficient,
+stein2013stochastic}. But {\em both} the log determinant {\em and} the
+derivatives are needed for efficient GP marginal likelihood learning: the
+derivatives are required for gradient-based optimization, while the log
+determinant itself is needed for model comparison, comparisons between the
+likelihoods at local maximizers, and fast and effective choices of starting
+points and step sizes in a gradient-based optimization algorithm.
+
+In this paper, we develop novel scalable and general purpose Chebyshev, Lanczos,
+and surrogate approaches for efficiently and accurately computing both the log
+determinant and its derivatives simultaneously. Our methods use only fast MVMs,
+and re-use the same MVMs for both computations. In particular:
+
+\vspace{-1mm}
+\begin{itemize}
+  \item We derive fast methods for simultaneously computing the log determinant
+  and its derivatives by stochastic Chebyshev, stochastic Lanczos, and surrogate
+  models, from MVMs alone. We also perform an error analysis and extend these
+  approaches to higher order derivatives.
+
+  \item These methods enable fast GP kernel learning whenever fast MVMs are
+  possible, including applications where alternatives such as scaled eigenvalue
+  methods (which rely on fast eigendecompositions) are not, such as for (i)
+  diagonal corrections for better kernel approximations, (ii) additive
+  covariances, (iii) multi-task approaches, and (iv) non-Gaussian likelihoods.
+
+  \item We illustrate the performance of our approach on several large,
+  multi-dimensional datasets, including a consequential crime prediction
+  problem, and a precipitation problem with $n = 528,474$ training points. We
+  consider a variety of kernels, including deep kernels \citep{wilson2016deep},
+  diagonal corrections, and both Gaussian and non-Gaussian likelihoods.
+  \item We have released code and tutorials as an extension to the GPML library 
+  \citep{rasmussen10gpml} at \url{https://github.com/kd383/GPML_SLD}. A Python
+  implementation of our approach is also available through the GPyTorch library:
+  \url{https://github.com/jrg365/gpytorch}.
+\end{itemize}
+\vspace{-1mm}
+When using our approach in conjunction with SKI \citep{wilson2015kernel} for
+fast MVMs, GP kernel learning is $\mathcal{O}(n + g(m))$, for $m$ inducing
+points and $n$ training points, where $g(m) \leq m \log m$. With algebraic
+approaches such as SKI we also do not need to worry about quadratic storage in
+inducing points, since symmetric Toeplitz and Kronecker matrices can be stored
+with at most linear cost, without needing to explicitly construct a matrix.
+
+Although we here use SKI for fast MVMs, we emphasize that the proposed iterative
+approaches are generally applicable, and can easily be used in conjunction with
+\emph{any} method that admits fast MVMs, including classical inducing point
+methods \citep{quinonero2005unifying}, finite basis expansions 
+\citep{le2013fastfood}, and the popular stochastic variational approaches 
+\citep{hensman2013uai}.  Moreover, stochastic variational approaches can
+naturally be combined with SKI to further accelerate MVMs 
+\citep{wilson2016stochastic}.
+
+We start in \S \ref{sgpsec:bac} with an introduction to GPs and kernel
+approximations.  In \S \ref{sgpsec:met} we introduce stochastic trace estimation
+and Chebyshev (\S \ref{sgpsec:che}) and Lanczos (\S \ref{sgpsec:lan})
+approximations. In \S \ref{sgpsec:err}, we describe the different sources of
+error in our approximations. In \S \ref{sgpsec:exp} we consider experiments on
+several large real-world data sets. We conclude in \S \ref{sgpsec:con}. The
+supplementary materials also contain several additional experiments and details.

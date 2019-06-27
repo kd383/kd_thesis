@@ -1,0 +1,24 @@
+When gradients are available, they are a valuable source of information for
+Gaussian process regression; but inclusion of $d$ extra pieces of information
+per point naturally leads to new scaling issues. We introduce two methods to
+deal with these scaling issues: D-SKI and D-SKIP. Both are structured
+interpolation methods, and the latter also uses kernel product structure. We
+have also discussed practical details ---preconditioning is necessary to
+guarantee convergence of iterative methods and active subspace calculation
+reveals low-dimensional structure when gradients are available. We present
+several experiments with kernel learning, dimensionality reduction, terrain
+reconstruction, implicit surface fitting, and scalable Bayesian optimization
+with gradients. For simplicity, these examples all possessed full gradient
+information; however, our methods trivially extend if only partial gradient
+information is available.
+
+There are several possible avenues for future work. D-SKIP shows promising
+scalability, but it also has large overheads, and is expensive for Bayesian
+optimization as it must be recomputed from scratch with each new data point. We
+believe kernel function approximation via Chebyshev interpolation and tensor
+approximation will likely provide similar accuracy with greater efficiency.
+Extracting low-dimensional structure is highly effective in our experiments and
+deserves an independent, more thorough treatment. Finally, our work in scalable
+Bayesian optimization with gradients represents a step towards the unified view
+of global optimization methods (i.e.~Bayesian optimization) and
+gradient-based local optimization methods (i.e.~BFGS).
