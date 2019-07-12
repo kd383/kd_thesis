@@ -66,7 +66,6 @@
 % \bibliographystyle{plain}
 %\bibliographystyle{IEEEbib}
 
-% \renewcommand{\caption}[1]{\singlespacing\hangcaption{#1}\normalspacing}
 \renewcommand{\topfraction}{0.85}
 \renewcommand{\textfraction}{0.1}
 \renewcommand{\floatpagefraction}{0.75}
@@ -76,7 +75,7 @@
 
 % Define theorem environment
 % Defintions, theorems, etc
-\usepackage[framemethod=tikz, nobreak = true]{mdframed}
+\usepackage[framemethod = tikz, nobreak = true]{mdframed}
 \newmdtheoremenv{theorem}{Theorem}
 \AtBeginEnvironment{theorem}{\begin{minipage}{\textwidth}}
 \AtEndEnvironment{theorem}{\end{minipage}}
@@ -104,6 +103,29 @@
 \newmdtheoremenv{conjecture}[theorem]{Conjecture}
 \AtBeginEnvironment{conjecture}{\begin{minipage}{\textwidth}}
 \AtEndEnvironment{conjecture}{\end{minipage}}
+
+\makeatletter
+\def\thenomenclature{%
+  \section*{\centering\normalsize\MakeUppercase{\nomname}}
+  \if@intoc\addcontentsline{toc}{section}{\nomname}\fi%
+  \nompreamble
+  \list{}{%
+    \labelwidth1cm
+    \leftmargin\labelwidth
+    \advance\leftmargin\labelsep
+    \itemsep\nomitemsep
+    \let\makelabel\nomlabel}
+  }
+\makeatother
+
+\newcommand{\chapnom}[1]{
+	\listspacing{sym}
+	\renewcommand{\nomname}{List of Symbols}
+	\begin{thenomenclature}
+		#1
+	\end{thenomenclature}
+	\clearpage
+}
 
 
 \title {Randomized numerical linear algebra for large-scale matrix data}
@@ -138,6 +160,7 @@ This document is dedicated to my parents and wife.
 \contentspage
 \tablelistpage
 \figurelistpage
+\makenomenclature
 
 \normalspacing \setcounter{page}{1} \pagenumbering{arabic}
 \pagestyle{cornell} \addtolength{\parskip}{0.5\baselineskip}
@@ -146,17 +169,21 @@ This document is dedicated to my parents and wife.
 	\label{ch1}
 	\input{./introduction.tex}
 
-\chapter{Network Density of States}
+\chapter{Preliminaries}
 	\label{ch2}
+	\input{./preliminary.tex}
+
+\chapter{Network Density of States}
+	\label{ch3}
 	\input{./ndos.tex}
 
 \chapter{Scalable Gaussian Processes}
-	\label{ch3}
+	\label{ch4}
 	\input{./sgp.tex}
 
-\chapter{Scalable Gaussian Processes with Derivatives}
-	\label{ch4}
-	\input{./sgpd.tex}
+% \chapter{Scalable Gaussian Processes with Derivatives}
+% 	\label{ch4.1}
+% 	\input{./sgpd.tex}
 
 \chapter{Robust Large-Vocabulary Topic Modeling}
 	\label{ch5}

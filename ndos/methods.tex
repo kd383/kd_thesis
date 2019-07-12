@@ -29,10 +29,11 @@ shifting and rescaling:
 We can compute these extremal eigenvalues efficiently for our sparse matrix $H$,
 so the pre-computation is not an issue~\cite{Parlett-1984-sparse}.
 
-The Chebyshev polynomials $T_m(x)$ satisfy the recurrence
-\begin{equation}\label{eq:cheb_3term}
+As defined in \cref{eqn:cheb_3term}, the Chebyshev polynomials $T_m(x)$ satisfy
+the recurrence
+\begin{equation*}
 	T_0(x) = 1,\; T_1(x) = x,\; T_{m+1}(x) = 2xT_m(x) - T_{m-1}(x)\,.
-\end{equation}
+\end{equation*}
 They are orthogonal with respect to $w(x) =  2 / \left[(1+\delta_{0n})\pi
 \sqrt{1-x^2}\right]$:
 \begin{equation} \label{eqn:orth}
@@ -47,37 +48,42 @@ as
 d_m = \int_{-1}^1T_m(\lambda)\mu(\lambda)d\lambda = \frac{1}{N}\sum_{i=1}^N 
 T_m(\lambda_i) = \frac{1}{N}\tr(T_m(H))\,.
 \end{gather}
-Here, $T_m(H)$ is the $m$th Chebyshev polynomial of the matrix $H$. The last
-equality comes from the spectral mapping theorem, which says that taking a
+Here, $T_m(H)$ is the $m$\hyp{}th Chebyshev polynomial of the matrix $H$. The
+last equality comes from the spectral mapping theorem, which says that taking a
 polynomial of $H$ maps the eigenvalues by the same polynomial. Similarly, we
-express the PDOS $\mu_k(\lambda)$ as \begin{equation}\label{eqn:pdoscoeff}
-d_{mk} = \int_{-1}^1 T_m(\lambda)\mu_k(\lambda)d\lambda = \sum_{i=1}^N |q_i(k)|
-^2T_m(\lambda_i) = T_m(H)_{kk}.
+express the PDOS $\mu_k(\lambda)$ as
+\begin{equation}\label{eqn:pdoscoeff}
+	d_{mk} = \int_{-1}^1 T_m(\lambda)\mu_k(\lambda)d\lambda = \sum_{i=1}^N |q_i(k)|
+	^2T_m(\lambda_i) = T_m(H)_{kk}\,.
 \end{equation}
 
 We want to efficiently extract the diagonal elements of the matrices $\{T_m
 (H)\}$ without forming them explicitly; the key idea is to apply the stochastic
 trace/diagonal estimation, proposed by Hutchinson~
 \cite{hutchinson1990stochastic} and Bekas et al.~\cite{bekas2007estimator}.
-Given a random probe vector $z$ such that $z_i$'s are i.i.d.~with mean $0$ and
-variance $1$,
-\begin{equation}\label{eq:probe_trace}
-	\BBE[z^THz] = \sum_{i,j}H_{ij}\BBE[z_iz_j] = \tr(H)
-\end{equation}
-\begin{equation}\label{eq:probe_diag}
-	\BBE[z\odot Hz] = \diag(H)
-\end{equation}
-where $\odot$ represents the Hadamard (elementwise) product. Choosing $N_z$
-independent probe vectors $Z_j$, we obtain the unbiased estimator
-\begin{equation}
-	\tr(H) = \BBE[z^THz] \approx \frac{1}{N_z}\sum_{j=1}^{N_z}Z_j^THZ_j 
-\end{equation}
-and similarly for the diagonal. \citet{avron2011randomized} review many possible
-choices of probes for \cref{eq:probe_trace,eq:probe_diag}; a common choice is
-vectors with independent standard normal entries. Using the Chebyshev recurrence
-(\cref{eq:cheb_3term}), we can compute the sequence $T_j(H)z$ for each probe at
+% Given a random probe vector $z$ such that $z_i$'s are i.i.d.~with mean $0$ and
+% variance $1$,
+% \begin{equation}\label{eq:probe_trace}
+% 	\BBE[z^THz] = \sum_{i,j}H_{ij}\BBE[z_iz_j] = \tr(H)
+% \end{equation}
+% \begin{equation}\label{eq:probe_diag}
+% 	\BBE[z\odot Hz] = \diag(H)
+% \end{equation}
+% where $\odot$ represents the Hadamard (elementwise) product. Choosing $N_z$
+% independent probe vectors $Z_j$, we obtain the unbiased estimator
+% \begin{equation}
+% 	\tr(H) = \BBE[z^THz] \approx \frac{1}{N_z}\sum_{j=1}^{N_z}Z_j^THZ_j 
+% \end{equation}
+% and similarly for the diagonal. \citet{avron2011randomized} review many possible
+% choices of probes for \cref{eq:probe_trace,eq:probe_diag}; a common choice is
+% vectors with independent standard normal entries. 
+We have described the details in \cref{pre:ste}. Using the Chebyshev recurrence 
+(\cref{eqn:cheb_3term}), we can compute the sequence $T_m(H)z$ for each probe at
 a cost of one matrix-vector product per term, for a total cost of $\calO(
 \abs{E}N_z)$ time per moment $T_m(H)$.
+\begin{equation}\label{eqn:3term_vec}
+	T_{m+1}(H)z = 2HT_m(H)z - T_{m-1}(H)z\,.
+\end{equation}
 
 In practice, we only use a finite number of moments rather than an infinite
 expansion. The number of moments required depends on the convergence rate of the
@@ -91,17 +97,22 @@ damping to resolve this issue ~\cite{jackson1911genauigkeit} (we will formalize
 this in \cref{thm:Jackson_damping}).
 
 \subsection{Gauss Quadrature and Lanczos (GQL)}
-Golub and Meurant developed the well-known Gauss Quadrature and Lanczos (GQL)
-algorithm to approximate bilinear forms for smooth functions of a matrix~
-\cite{golub1997matrices}.  Using the same stochastic estimation from \S~
-\ref{subsec:kpm}, we can also apply GQL to compute DOS.
+
+This method builds of the Gauss Quadrature and Lanczos (GQL) algorithm we
+introduced in \cref{pre:fom}. Using the same stochastic estimation from 
+\cref{subsec:kpm}, we can also apply GQL to compute DOS.
+
+% Golub and Meurant developed the well-known Gauss Quadrature and Lanczos (GQL)
+% algorithm to approximate bilinear forms for smooth functions of a matrix~
+% \cite{golub1997matrices}.  Using the same stochastic estimation from \S~
+% \ref{subsec:kpm}, we can also apply GQL to compute DOS.
 
 For a starting vector $z$ and graph matrix $H$, Lanczos iterations after
 $M$ steps produce a decomposition
-\begin{equation}
-	HZ_M = Z_M^T\Gamma_M + r_Me_M^T\,,
-\end{equation}
-where $Z_M^TZ_M = I_M$, $Z_M^Tr_M = 0$, and $\Gamma_M$ tridiagonal. GQL 
+\begin{equation*}
+	HZ_M = Z_M\Gamma_M + r_Me_M^T\,,
+\end{equation*}
+where $Z_M^TZ_M = I_M$, $Z_M^Tr_M = 0$, and $\Gamma_M$ tridiagonal. GQL
 approximates $z^Tf(H)z$ with $\norm{z}^2e_1^Tf(T_M)e_1$, implying
 \begin{equation}
 	z^Tf(H)z = \sum_{i=1}^N \abs{z^Tq_i}^2f(\lambda_i) \approx \norm{z}^2\sum_
@@ -228,35 +239,35 @@ corresponding ones in normalized adjacency matrix for our example.
   \begin{subfigure}{\textwidth}
   	\centering
 		\begin{tikzpicture}[remember picture, overlay]
-			\node[draw,line width=1mm,circle,inner sep=1mm] (A) at (-3.5,0) 
+			\node[draw,line width=1mm,circle,inner sep=1mm] (A) at (-4,0) 
 			{${\color{blue}\bm{+1}}$};
-			\node[draw,line width=1mm,circle,inner sep=1mm] (B) at (-1.5,0)
+			\node[draw,line width=1mm,circle,inner sep=1mm] (B) at (-2,0)
 			{${\color{red}\bm{-1}}$};
 			\node[draw,line width=1mm,fill=gray,circle,inner sep=3mm] (C) at 
-			(-2.5,-1) {};
-			\node[draw,line width=1mm,circle,inner sep=1mm] (D) at (1.5,0)
+			(-3,-1) {};
+			\node[draw,line width=1mm,circle,inner sep=1mm] (D) at (1,0)
 			{${\color{red}\bm{-1}}$};
-			\node[draw,line width=1mm,circle,inner sep=1mm] (E) at (3.5,0)
+			\node[draw,line width=1mm,circle,inner sep=1mm] (E) at (3,0)
 			{${\color{blue}\bm{+1}}$};
-			\node[draw,line width=1mm,circle,inner sep=1mm] (F) at (5.5,0)
+			\node[draw,line width=1mm,circle,inner sep=1mm] (F) at (5,0)
 			{${\color{red}\bm{-1}}$};
 			\node[draw,line width=1mm,fill=gray,circle,inner sep=3mm] (G) at 
-			(2.5,-1) {};
+			(2,-1) {};
 			\node[draw,line width=1mm,fill=gray,circle,inner sep=3mm] (H) at 
-			(4.5,-1) {};
+			(4,-1) {};
 
 			\draw[line width=1mm] (A)--(C);
 			\draw[line width=1mm] (B)--(C);
-			\draw[line width=1mm, loosely dashed] (-4,-2)--(C);
-			\draw[line width=1mm, loosely dashed] (-1,-2)--(C);
+			\draw[line width=1mm, loosely dashed] (-4.5,-2)--(C);
+			\draw[line width=1mm, loosely dashed] (-1.5,-2)--(C);
 			\draw[line width=1mm] (D)--(G);
 			\draw[line width=1mm] (E)--(G);
 			\draw[line width=1mm] (E)--(H);
 			\draw[line width=1mm] (F)--(H);
-			\draw[line width=1mm, loosely dashed] (1,-2)--(G);
-			\draw[line width=1mm, loosely dashed] (4,-2)--(G);
-			\draw[line width=1mm, loosely dashed] (3,-2)--(H);
-			\draw[line width=1mm, loosely dashed] (6,-2)--(H);
+			\draw[line width=1mm, loosely dashed] (.5,-2)--(G);
+			\draw[line width=1mm, loosely dashed] (3.5,-2)--(G);
+			\draw[line width=1mm, loosely dashed] (2.5,-2)--(H);
+			\draw[line width=1mm, loosely dashed] (5.5,-2)--(H);
 		\end{tikzpicture}
 		\vspace{2.5cm}
 		\caption{$\lambda=0$}\label{fig:motif_0}
@@ -376,6 +387,7 @@ corresponding ones in normalized adjacency matrix for our example.
   labeled nodes.}\label{fig:motifs}
   \end{center}
 \end{figure}
+\vspace{-.5cm}
 
 To detect these motifs in large graphs, we deploy a randomized hashing
 technique. Given a random vector $z$, the hashing weight $w=Hz$ encodes all
@@ -399,9 +411,9 @@ each random probe $Z$ with the projected probe $Z_r = PP^T Z$ at an additional
 cost of $O(N_{\mathrm{motif}})$ per probe, where $N_{\mathrm{motif}}$ is the
 number of nodes involved in motifs.
 
-The motif filtering method essentially allow us to isolate the spiky components
+The motif filtering method essentially allows us to isolate the spiky components
 from the spectrum. As a result, we are able to obtain a more accurate
-approximation using fewer Chebyshev moments. Figure \ref{fig:motif_filt}
+approximation using fewer Chebyshev moments. \cref{fig:motif_filt}
 demonstrates the improvement on the approximation as we procedurally filter out
 motifs at $0$, $-1/3$, $-1/2$, and $-1/4$. The eigenvalue $-1/m$ can be
 generated by an edge attached to the graph through $m-1$ nodes, similar to

@@ -1,0 +1,293 @@
+\section{Data as Matrices}\label{pre:dam}
+
+Matrices are ubiquitous in data\hyp{}related fields, from the
+long\hyp{}established computer science and statistics, to the rapidly growing
+machine learning and data science. From different perspectives, a matrix can
+represent a variety of objects:
+\begin{itemize}
+	\item A simple and compact way of storing information. For example, each
+	column of a matrix corresponds to a data point and each row stands for a
+	feature.
+	\item A linear map $A\Colon\calV\to\calU$ from one vector space to another
+	through matrix\hyp{}vector\hyp{}multiplication $v\mapsto u = Av$. 
+	\item A bilinear map $A\Colon\calV\times\calU\to \BBR$ such that $(v,
+	u)\mapsto u^TAv$.
+\end{itemize}
+Most importantly, these representations are not incompatible with each other;
+and it is the capacity of being all of them at once that makes matrices such
+a powerful tool in applications. For instance, an adjacency matrix $A\in\BBR^
+{N\Times N}$ can describe an unweighted graph where $A_{ij} = 1$ if node $i$
+and $j$ are connected by an edge, and $0$ otherwise. In that sense, a row of $A$
+can be viewed as the connectivity features for the corresponding node.
+Meanwhile, applying $A$ to a vector standing for the initial condition
+of a diffusion process captures the dynamics on this graph. Finally, the
+bilinear map of $A$ on $\calV = \calU = \{0, 1\}^N$ measures the number of edges
+from one set of nodes to the other and thus can be used in graph partitioning
+tasks.
+
+Therefore, it is inadequate to categorize data matrices by their linear
+algebraic roles. Instead, we introduce the matrices involved in this thesis by
+the properties of datasets they encapsulate. Whatever type of data matrices we
+are dealing with, the most critical task is identifying the intrinsic numerical
+properties attached to it, so that we can adapt our algorithms to specific
+applications.
+
+\paragraph{Matrices for Feature}
+
+A dataset with finite number of features can be associated with a
+vector space, i.e., feature space. An object\hyp{}feature matrix $A\in\BBR^
+{M\Times N}$ compactly encodes all of its information by treating $N$
+data points as column vectors, each with $M$ features. In addition, many
+algorithms involve linear algebraic operations on data, and such representation
+naturally facilitates their computation as well as massive parallelization. For
+example, data compression and dimensionality reduction techniques, such as
+frequency sampling and principal component analysis, are usually implemented as
+low\hyp{}rank decompositions on data matrices. Neural networks can be viewed as
+a sequence of linear transformations and element\hyp{}wise operations, which
+rely on the matrix computation for efficient parallelization. As a result,
+matrices together with higher order variations are easily the most popular
+mathematical objects for keeping track of data during computation.
+
+In this dissertation, a majority of matrices are this type even though they are
+not always the focus of study. Every experiment of Gaussian processes regression
+uses object\hyp{}feature matrices for both input and output. In topic modeling,
+the topic\hyp{}word matrix is a latent matrix of this type, and plays an
+crucial role in interpreting the model. Finally, the main matrix of interest
+in \cref{ch6} is formed by having electron orbital pairs as objects and 
+real\hyp{}space discretization as features.
+
+\paragraph{Matrices for Correlation}
+
+This type of matrices describes the pairwise relationship of objects rather
+than individual ones. Examples in this dissertation include the 
+co\hyp{}occurrence matrix in \cref{ch5} that indicates the probability of two
+objects occurring together in a document, and the kernel matrices in \cref{ch4} 
+that gives the covariance between two points for a Gaussian process. The former
+can be derived from the document\hyp{}object matrix, which suggests this type of
+data matrices can sometimes be considered as higher\hyp{}order information
+extracted from the object\hyp{}feature matrices. The correlation
+between objects has various benefits and is widely used in statistical models.
+In our case, it leads to quantified uncertainty, theoretical guarantee in
+optimality, and robustness in algorithms.
+
+\paragraph{Matrices for Dynamics}
+
+The last type of data matrices is generally associated with differential
+operators, whether in a continuous setting or the corresponding discrete
+analogs. It appears in \cref{ch6} both explicitly as discretization of Laplace
+operator, and implicitly as integral operators---e.g., the Hatree\hyp{}Fock
+operator. Here, we focus on exploiting structural information to compress these
+and gain computational efficiency. On the other hand, in \cref{ch3} the graph
+Laplacian and the random walk matrix describe the dynamics on the original
+graph, which we use to reveal structural properties. There is no doubt a deep
+connection between the dynamics on an underlying object and its structures. In
+general, we can leverage our knowledge on one to gain valuable insights on the
+other.
+
+\section{Functions of Matrices}\label{pre:fom}
+
+The main mathematical problems in both \cref{ch3,ch4} can be simplified to
+estimating key quantities for functions of matrices. In this dissertation,
+a function of matrices refers to $f(A)$, produced by a spectral mapping of $f$
+on a matrix $A\in\BBR^{N\Times N}$. \citet{higham2008functions} gives a rigorous
+and general definition of $f(A)$, which only requires $f$ to be 
+\emph{defined}\footnote{Defined is a formal term here. Given a matrix $A$
+with distinct eigenvalues $\lambda_1,\cdots,\lambda_s$ and $n_i$ the size of
+the largest Jordan block for $\lambda_i$, the function $f$ is defined on the
+spectrum of $A$ if $f^{(j)}(\lambda_i)$ exists for $j = 0\Colon n_i-1$ and $i =
+1\Colon s$. Please refer to \cite[Definition~1.1]{higham2008functions} for a
+detailed discussion.} on the spectrum of $A$. However, we mostly work with a
+special case, where $A$ is Hermitian and $f$ is smooth over the spectrum of $A$.
+Given the eigendecomposition $A = V^T\Lambda V$ where $V$ is orthogonal and
+$\Lambda = \diag(\lambda_1,\cdots,\lambda_N)$ is diagonal, the spectral mapping
+theorem tells us
+\begin{equation}\label{eqn:smt}
+	f(A) = f(V^T\Lambda V) = V^T f(\Lambda)V = V^T\diag(f(\lambda_1),\cdots,f
+	(\lambda_N))V\,.
+\end{equation}
+
+Historically, there has been long\hyp{}lasting interest in numerical methods for
+computing functions of matrices because of its importance in many applications,
+such as differential equations, Markov models, and network science. The
+straightforward approach in \cref{eqn:smt} takes an $\calO(N^3)$
+eigendecomposition, which is not always feasible. Many tailored algorithms
+have been developed for a few specific but prevalent functions, like matrix
+square root and matrix exponential \cite[Chapter 6 \& 10]{higham2008functions}.
+In a remarkable work, \citet{moler2003nineteen} presented nineteen ways of
+computing matrix exponential, comparing these in terms of both efficiency and
+stability. Generally, matrix decomposition methods are considered to be the most
+practical with existing efficient implementations.
+
+Given the context in this dissertation, we adopt two methods for evaluating
+functions of matrices. The first is a polynomial expansion method in the
+Chebyshev polynomial basis. The Chebyshev polynomials $T_m(x)$ can be defined
+with the recurrence:
+\begin{equation}\label{eqn:cheb_3term}
+	T_0(x) = 1,\quad T_1(x) = x,\quad T_{m+1}(x) = 2xT_m(x) - T_{m-1}(x)\,.
+\end{equation}
+The corresponding expansion is simply $f(x) \approx \tilde{f}(x)= \sum_
+{m=0}^Mc_mT_m(x)$. It is well\hyp{}known that such expansion with appropriate
+weights $c_m$ produces the best polynomial approximation over the compact
+support $[-1,1]$. In particular, for any smooth function $f$, the approximation
+error decays exponentially with the number of terms in the expansion~\cite{
+Trefethen-2013-ATAP}. Many functions we deal with satisfy the smoothness
+condition, thereby making this method very attractive in our applications. To
+evaluate the function of matrix $f(A)$, we take advantage of the three\hyp{}term
+recurrence relation
+\begin{equation}\label{eqn:3term_fom}
+T_{m+1}(A) = 2AT_m(A)-T_{m-1}(A)\,,
+\end{equation}
+and avoid storing all $T_m(A)$ at once. When we are only interested in applying
+$f(A)$ to a vector $v$, we can further reduce the computation to just
+calculating $T_m(A)v$ for $m = 1,\cdots, M$, and exploit fast MVM with $A$ if
+possible.
+
+The second method is Gauss quadrature and Lanczos (GQL) algorithm proposed by 
+\citet{golub1997matrices}. It is based on the Lanczos algorithm, which produces
+the decomposition
+\begin{equation}\label{eqn:lan_decomp}
+	AZ_M = Z_M\Gamma_M + r_Me_M^T\,,
+\end{equation}
+where $Z_M^TZ_M = I_M$, $Z_M^Tr_M = 0$, and $\Gamma_M$ tridiagonal. If $A$ is
+numerically low\hyp{}rank, or has relatively few distinct eigenvalues, it will
+only take a small number of Lanczos iterations to obtain the approximation
+$A\approx Z_M\Gamma_MZ_M^T$. Afterwards, we can quickly compute $f(\Gamma_M)$
+through eigendecomposition since $\Gamma_M$ is $M$\hyp{}by\hyp{}$M$ and
+tri\hyp{}diagonal. The final approximation is $f(A) = Z_Mf(\Gamma_M)Z_M^T$.
+
+Both methods we introduce here have clear advantages and drawbacks. Chebyshev
+expansion method has strong theoretical guarantees on convergence rate for $f$
+with some degree of smoothness over the spectrum of $A$. Otherwise, it may take
+extremely large number of moments to resolve the discontinuity, thus suffer in
+either efficiency or approximation quality. On the other hand, GQL works well
+only for matrices with a few distinct eigenvalues, when the Lanczos algorithm is
+able to converge quickly. Therefore, it is crucial for us to determine the
+numerical characteristics of the matrices we are interested in, and choose the
+appropriate method for each application.
+
+\section{Stochastic Estimation}\label{pre:ste}
+
+Stochastic estimator is one of the key tools in this dissertation. Given a
+linear operator $A\in\BBR^{N\Times N}$, often in implicit form, it helps us to
+efficiently extract the trace and diagonal by probing the operator with random
+vectors. 
+
+The stochastic trace estimator was first proposed by~\citet{
+hutchinson1990stochastic}, who used the technique to approximate the
+trace of the influence matrix for Laplacian
+smoothing splines. In his case, applying influence matrix $A$ to each vector
+requires solving an expensive smoothing spline. Therefore, obtaining all
+diagonal elements exactly by calculating $e_i^TAe_i$ --- for $i=1,\cdots, N$ and
+$e_i$ the $i$\hyp{}th column of the identity matrix --- has a significant cost.
+Instead, he applied $A$ to a set of independent probe vectors $z$ such that
+$z_i$'s are i.i.d. with mean $0$ and variance $1$. Consequently, 
+\begin{equation}\label{eq:probe_trace}
+	\BBE[z^TAz] = \sum_{i,j}A_{ij}\BBE[z_iz_j] = \tr(A)\,.
+\end{equation}
+Choosing $N_z$ independent probe vectors $Z_j$, we obtain the unbiased estimator
+\begin{equation}\label{eqn:trace_est}
+	\tr(A) = \BBE[z^TAz] \approx \frac{1}{N_z}\sum_{j=1}^{N_z}Z_j^TAZ_j\,.
+\end{equation}
+Hutchinson also identified that Bernoulli distribution for $z_i$ leads to
+minimal variance on the estimated trace.
+
+Since then, Avron and Toledo~\cite{avron2011randomized} reviewed many possible
+choices of probes for \cref{eq:probe_trace,eq:probe_diag}; another common choice
+is vectors with independent standard normal entries. On the other hand, 
+\citet{bekas2007estimator} has extended the idea for diagonal estimation by
+observing
+\begin{equation}\label{eq:probe_diag}
+	\BBE[z\odot Az] = \diag(A)\,,
+\end{equation}
+where $\odot$ represents the Hadamard (elementwise) product. Let $Z\in\BBR^
+{N\Times N_z}$ so the columns are independent probe vectors. If we inspect the
+$k$\hyp{}th diagonal element,
+\begin{equation}\label{eqn:exact_cond}
+	A_{kk} = \BBE[z_k(Az)_k] = \frac{1}{N_z}\sum_{i}A_{ki}\sum_{j=1}^{N_z}Z_{kj}Z_
+	{ij}
+\end{equation}
+Based on \cref{eqn:exact_cond}, \citet{bekas2007estimator} proposed the exact
+condition for the diagonal estimator.
+
+\begin{theorem}[Exact Condition for Diagonal Estimatior]\label{thm:exact_cond}
+Let $Z\in\BBR^{N\times N_z}$ be the matrix of which columns are probe vectors of
+the diagonal estimator in \cref{eqn:exact_cond}. Use $Z_{i\ast}$ to denote the
+$i$\hyp{}th row of $Z$. The estimation for $A_{kk}$ is exact if $\norm{Z_
+{k\ast}} = 1$, and $Z_{k\ast}^TZ_{i\ast} = 0$ whenever $H_{ki}\neq 0$ for $i\neq
+k$.
+\end{theorem}
+
+The direct consequence of \cref{thm:exact_cond} is that we can now design a
+specific set of probe vectors to satisfy the exact condition by solving a graph
+coloring problem. Treating $A$ as the adjacency matrix of a graph, and the
+non\hyp{}zero entries as edges, a graph coloring partitions the nodes into
+disjoint subsets for which no edge exists between each other. If we assign each
+subset a row vector chosen from an orthonormal set, the resulting $Z$ will yield
+the exact diagonal through the same calculation in \cref{eqn:exact_cond}.
+Although obtaining an optimal coloring scheme is NP\hyp{}hard, there exists a
+greedy coloring algorithm using breadth\hyp{}first\hyp{}search that can produce
+reasonable results for some applications \cite[Theorem~28.33]
+{arumugam2016handbook}.
+
+Finally, we also attempted to use control variate to improve the stochastic
+estimation. In \cref{ch4} where the goal is to estimate the predictive variance,
+we take the more accurate results from pivoted Cholesky approximation on a few
+data points as control variate. Despite little reduction in variance, we
+are able to obtain an unbiased estimator.
+
+\section{Interpretable Low\hyp{}Rank Approximations}\label{pre:lra}
+
+Low\hyp{}rank structure of matrices plays an essential role in many of our
+methods. If a matrix $A\in\BBR^{N\times N}$ has rank $k$, it can be
+decomposed into a product of two smaller matrices $W\in\BBR^{N\times k}$ and
+$H\in\BBR^{k\times N}$:
+\begin{equation}\label{eqn:low_rank}
+A = WH\,.
+\end{equation}
+Hence, we are able to efficiently store $A$ and multiply it with a vector in
+$\calO(N)$ rather than $\calO(N^2)$. Furthermore, the columns of matrix $W$
+provide us useful insight about the data, since they form a basis that span the
+original columns of $A$. Low\hyp{}rank approximation is certainly one of the
+most well\hyp{}studied problems in linear algebra; and it is becoming increasing
+popular with the recent development in data science and machine learning. 
+High\hyp{}dimensional data matrices encountered in these fields commonly have a
+low numerical rank. Correspondingly, researchers have proposed low\hyp{}rank
+models for a wide variety of applications, such as principal component analysis,
+natural language processing, and recommendation system. \citet{udell2019big}
+formalized this notion by showing a nice latent variable model produces data
+that can be well approximated by low\hyp{}rank matrices.
+
+Among the extensive literature on computing and exploiting low\hyp{}rank
+structures, there is a growing interest in interpretability. Previously, 
+low\hyp{}rank approximations aim to capture the information with the highest
+numerical importance, yet they often fail to preserve intrinsic properties
+of datasets, e.g., non\hyp{}negativity, sparsity, and convexity. Thus,
+many studies developed constrained low\hyp{}rank approximation algorithms in
+order to retain these properties, and allow us to interpret the output in a
+natural setting. A prominent example is the non\hyp{}negative matrix
+approximation, for which $W$ and $H$ are required to be element\hyp{}wise 
+non\hyp{}negative. \citet{lee1999learning} applied it to images of faces, and
+the produced factors can be visualized as components of facial structures. In 
+\cref{ch5}, the topic model is also a non\hyp{}negative low\hyp{}rank
+decomposition, and we are able to analyze each topic as a probability
+distribution over words.
+
+One attractive approach towards interpretable low\hyp{}rank approximations
+enforces $W$ to consist of columns from $A$. This allows us to describe all data
+points in terms of a small subset, which clearly maintain the fundamental
+characteristics. CUR matrix decomposition, a well\hyp{}known example of this
+type, is often preferred over singular valued decomposition in certain
+applications for its efficiency and interpretability. The biggest challenge here
+is to select a good subset of data points to obtain an accurate representation.
+The column subset selection problem is also a heavily discussed topic in
+numerical linear algebra\cite{boutsidis2009improved,deshpande2010efficient}. One
+of the most popular building block for solving it is QR factorization with
+column pivoting (QRCP). The column pivoting procedure gives QR factorization the
+rank\hyp{}revealing property. Combined with randomized sampling techniques, QRCP
+is able to effectively select columns that leads to near\hyp{}optimal 
+low\hyp{}rank approximations. Both \cref{ch5,ch6} tackle the column subset
+selection problem, but from different perspectives. \cref{ch5} develops a
+scalable pre\hyp{}processing framework to overcome the robustness issue for QRCP
+on a noisy dataset. \cref{ch6} exploits the physical attributes in the system to
+replace pivots from QRCP with centroids from weight K\hyp{}means algorithm. The
+resulting decomposition is much more efficient without any loss in accuracy.

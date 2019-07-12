@@ -1,4 +1,35 @@
-\begin{figure}[ht]
+\subsection{Gallery of DOS/PDOS}
+We first present our spectral histogram approximation from DOS/ PDOS on a wide
+variety of graphs, including collaboration networks, online social networks,
+road networks and autonomous systems (dataset details are in the appendix). For
+all examples, we apply our methods to the normalized adjacency matrices using
+$500$ Chebyshev moments and $20$ Hadamard probe vectors. Afterwards, the
+spectral density is integrated into $50$ histogram bins. In \cref{fig:gallery},
+the DOS approximation is on the first row, and the PDOS approximation is on the
+second. When a spike exists in the spectrum, we apply motif filtering, and DOS
+is zoomed appropriately to show the remaining part. For PDOS, we stack the
+spectral histograms for all nodes vertically, sorted by their projected weights
+on the leading left singular vector. Red indicates that a node has high weight
+at certain parts of the spectrum, whereas blue indicates low weight.
+
+We observe many distinct shapes of spectrum in our examples. The eigenvalues of
+denser graphs, such as the Marvel characters network (\ref{fig:marvel_ldos}:
+average degree $52.16$) and Facebook union of ego networks 
+(\ref{fig:facebook_ldos}: average degree $43.69$), exhibit decay similar to
+thepower-law around $\lambda=0$. There has been study on the power-law
+distribution in the eigenvalues of the adjacency and the Laplacian matrix, but
+it only focuses on the leading eigenvalues rather than the entire spectrum~
+\cite{eikmeier2017revisiting} for large real-world datasets. Relatively sparse
+graphs (\ref{fig:erdos_ldos}: average degree $3.06$,; \ref{fig:as_ldos}: average
+degree $4.13$) often possess spikes, especially around $\lambda=0$, which
+reflect a larger set of loosely-connected boundary nodes. It is much more
+evident in the PDOS spectral histograms, which allow us to pick out the nodes
+with dominant weights at $\lambda=0$ and those that contribute most to local
+structures. Finally, though the road network is quite sparse (ave. deg $2.50$),
+its regularity results in a lack of special features, and most nodes contribute
+evenly to the spectrum according to PDOS.
+
+\begin{figure}[htp]
   \begin{subfigure}[t]{0.19\textwidth}
     \centering  
     \captionsetup{justification=centering,font=scriptsize}
@@ -174,38 +205,6 @@
   for the California Road Network (\ref{fig:roadca_ldos}) is omitted, as it is
   too large to compute exactly (1,965,206 nodes).}\label{fig:gallery}
 \end{figure}
-
-\subsection{Gallery of DOS/PDOS}
-We first present our spectral histogram approximation from DOS/ PDOS on a wide
-variety of graphs, including collaboration networks, online social networks,
-road networks and autonomous systems (dataset details are in the appendix). For
-all examples, we apply our methods to the normalized adjacency matrices using
-$500$ Chebyshev moments and $20$ Hadamard probe vectors. Afterwards, the
-spectral density is integrated into $50$ histogram bins. In \cref{fig:gallery},
-the DOS approximation is on the first row, and the PDOS approximation is on the
-second. When a spike exists in the spectrum, we apply motif filtering, and DOS
-is zoomed appropriately to show the remaining part. For PDOS, we stack the
-spectral histograms for all nodes vertically, sorted by their projected weights
-on the leading left singular vector. Red indicates that a node has high weight
-at certain parts of the spectrum, whereas blue indicates low weight.
-
-We observe many distinct shapes of spectrum in our examples. The eigenvalues of
-denser graphs, such as the Marvel characters network (\ref{fig:marvel_ldos}:
-average degree $52.16$) and Facebook union of ego networks 
-(\ref{fig:facebook_ldos}: average degree $43.69$), exhibit decay similar to
-thepower-law around $\lambda=0$. There has been study on the power-law
-distribution in the eigenvalues of the adjacency and the Laplacian matrix, but
-it only focuses on the leading eigenvalues rather than the entire spectrum~
-\cite{eikmeier2017revisiting} for large real-world datasets. Relatively sparse
-graphs (\ref{fig:erdos_ldos}: average degree $3.06$,; \ref{fig:as_ldos}: average
-degree $4.13$) often possess spikes, especially around $\lambda=0$, which
-reflect a larger set of loosely-connected boundary nodes. It is much more
-evident in the PDOS spectral histograms, which allow us to pick out the nodes
-with dominant weights at $\lambda=0$ and those that contribute most to local
-structures. Finally, though the road network is quite sparse (ave. deg $2.50$),
-its regularity results in a lack of special features, and most nodes contribute
-evenly to the spectrum according to PDOS.
-
 
 \subsection{Computation time}
 

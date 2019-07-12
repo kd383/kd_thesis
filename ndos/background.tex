@@ -10,7 +10,8 @@ terms of $D$ and $A$.  We describe a few of these below, along with their
 connections to other research areas. For each operator, we let $\lambda_1 \leq
 \ldots \leq \lambda_N$ denotes the eigenvalues in ascending order.
 
-\noindent{\bf Adjacency Matrix: $\pmb{A}$.} 
+\paragraph{Adjacency Matrix: $\pmb{A}$}
+
 Many studies on the spectrum of $A$ originate from random matrix theory where
 $A$ represents a random graph model. In these cases, the limiting behavior of
 eigenvalues as $N\To\infty$ is of particular interest. Besides the growth of
@@ -26,7 +27,8 @@ random graph models. They show the spectra of these random graph models relate
 to geometric characteristics such as the number of cycles and the degree
 distribution.
 
-\noindent{\bf Laplacian Matrix: $\pmb{L = D - A}$.} 
+\paragraph{Laplacian Matrix: $\pmb{L = D - A}$}
+
 The Laplace operator arises naturally from the study of dynamics in both
 spectral geometry and spectral graph theory. The continuous Laplace operator
 and its generalizations are central to the description of physical systems
@@ -46,8 +48,10 @@ also appear in bounds for vertex connectivity ($\lambda_2$)~
 \cite{cvetkovic2009introduction}, minimal bisection ($\lambda_2$)~
 \cite{donath2003lower}, and maximum cut ($\lambda_N$)~\cite{trevisan2012max}.
 
-\noindent{\bf Normalized Laplacian Matrix: $\pmb{\overline{L} = I - D^{-1/2}AD^
-{-1/2}}$.} We will also mention the normalized adjacency matrix $\overline{A} =
+\paragraph{Normalized Laplacian Matrix: $\pmb{\overline{L} = I - D^{-1/2}AD^
+{-1/2}}$}
+
+We will also mention the normalized adjacency matrix $\overline{A} =
 D^{-1/2}AD^{-1/2}$ and graph random walk matrix $P = D^{-1}A$ here, because
 these matrices have the same eigenvalues as $\bar{L}$ up to a shift. The
 connection to some of the most influential results in spectral geometry is
@@ -61,7 +65,7 @@ $\lambda_2(\overline{L})$~\cite{montenegro2006mathematical}:
   E, i\in S, j\notin S\}}}{\min(\text{vol}(S), \text{vol}(V\backslash S))} \leq 
   \sqrt{2\lambda_2(\overline{L})} ,
 \end{equation}
-where $\vol(T) = \sum_{i \in T}\sum_{j=1}^{N}a_{ij}$. Cheeger's inequality
+where $\vol(S) = \sum_{i \in S}\sum_{j=1}^{N}a_{ij}$. Cheeger's inequality
 offers crucial insights and powerful techniques for understanding popular
 spectral graph algorithms for partitioning~\cite{mcsherry2001spectral} and
 clustering~\cite{ng2002spectral}. It also plays a key role in analyzing the
@@ -70,7 +74,7 @@ mixing time of Markov chains and random walks on a graph
 extremal eigenvalues again emerge from relevant optimization formulations.
 
 \subsection{Spectral Density (Density of States --- DOS)}
-Let $H = \BBR^{N\times N}$ be any symmetric graph matrix with an
+Let $H\in\BBR^{N\times N}$ be any symmetric graph matrix with an
 eigendecomposition $H = Q\Lambda Q^T$, where $\Lambda = \diag 
 (\lambda_1,\cdots,\lambda_N)$ and $Q = [q_1,\cdots, q_N]$ is orthogonal. The
 spectral density induced by $H$ is the generalized function
@@ -100,10 +104,10 @@ are replaced by singular values, and eigenvectors by left/right singular
 vectors.
 
 Naively, to obtain the DOS and LDOS requires computing all eigenvalues and
-eigenvectors for an $N$-by-$N$ matrix, which is infeasible for large graphs.
-Therefore, we turn to algorithms that approximate these densities. Since the DOS
-is a generalized function, it is important we specify how the estimation is
-evaluated. One choice is to treat $\mu$ (or $\mu_k$) as a distribution, and
+eigenvectors for an $N$\hyp{}by\hyp{}$N$ matrix, which is infeasible for large
+graphs. Therefore, we turn to algorithms that approximate these densities. Since
+the DOS is a generalized function, it is important we specify how the estimation
+is evaluated. One choice is to treat $\mu$ (or $\mu_k$) as a distribution, and
 measure its  approximation error with respect to a chosen function space
 $\calL$. For  example, when $\calL$ is the set of Lipschitz continuous functions
 taking the value 0 at 0, the error for estimated $\widetilde{\mu}$ is in the

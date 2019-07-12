@@ -51,5 +51,8 @@ $(DOC).ps: $(DOC).dvi $(FIGS)
 
 include $(COMMONRULES)
 
+nomenclature:
+	makeindex Thesis.nlo -s nomencl.ist -o Thesis.nls
+
 realclean: clean
-	rm -f  *.toc *.synctex.gz *.auxprev *.out *.lot *.lof *.fdb_latexmk *.fls
+	rm -f  *.toc *.synctex.gz *.auxprev *.out *.lot *.lof *.fdb_latexmk *.fls *.nlo *.nls
