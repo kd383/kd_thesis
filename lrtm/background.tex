@@ -1,54 +1,53 @@
-Our new algorithms build on the the \textbf{Joint-Stochastic Matrix
-Factorization (JSMF)} framework \cite{moontae2015nips}, which we now describe.
-Let $\BH \In \BBR^{N \Times M}$ be the object-example matrix whose $m$-th column
-vector $\Bh_m$ counts the occurrences of each of the $N$ objects in the
-vocabulary in example $m$. We denote the total number of objects in example $m$
-by $n_m$. Given a user-specified number of clusters $K$, we seek to learn an
-object-cluster matrix $\BB \In \BBR^{N \Times K}$ where $\BB_{ik}$ is the
+Our new algorithms build on the the Joint\hyp{}Stochastic Matrix Factorization 
+(JSMF) framework \cite{moontae2015nips}, which we now describe. Let $H \in
+\BBR^{N \Times M}$ be the object\hyp{}example matrix whose $m$\hyp{}th column
+vector $h_m$ counts the occurrences of each of the $N$ objects in the vocabulary
+in example $m$. We denote the total number of objects in example $m$ by $n_m$.
+Given a user-specified number of clusters $K$, we seek to learn an
+object\hyp{}cluster matrix $B \in \BBR^{N \Times K}$ where $B_{ik}$ is the
 conditional probability of observing object $i$ given latent cluster $k$.
-Instead of learning $\BB$ directly from the sparse and noisy observations $\BH$,
-JSMF begins with constructing the joint-stochastic co-occurrence $\BC \in \BBR^
+Instead of learning $B$ directly from the sparse and noisy observations $H$,
+JSMF begins with constructing the joint-stochastic co-occurrence $C \in \BBR^
 {N \Times N}$ by
 \begin{equation}
-	\BC = \BHhat \BHhat^T - \BHdiag, \;\; \Bhhat_m \Eq \frac{\Bh_m}{\sqrt{n_m
-	(n_m \Minus 1)M}}, \;\; \BHdiag \Eq diag \left( \sum_{m=1}^M \frac{\Bh_m}
+	C = \Hhat \Hhat^T - \Hdiag, \;\; \hhat_m \Eq \frac{h_m}{\sqrt{n_m
+	(n_m \Minus 1)M}}, \;\; \Hdiag \Eq \diag \left( \sum_{m=1}^M \frac{h_m}
 	{n_m(n_m \Minus 1)M} \right).
 	\label{eqn:unbiased}
 \end{equation}
-Then the original Anchor Word algorithm decomposes $\BC$ into $\BB \BA \BB^T$ by
-Algorithm \ref{alg:awa}, where $\BA \In \BBR^{K \Times K}$ is the cluster
-correlation matrix, whose entry $\BA_{kl}$ captures the joint probability
-between two latent clusters $k$ and $l$.\footnote{$\BC$ is proven to be a by far
-more robust estimator than $\BH$ in \cite{AGM}.  But actual construction of
-$\BC$ in \cite{arora2013practical} is slightly misleading without dividing
-by $M$. We report the full equations in this paper.} In the limit, using data
-generated according to the correct probabilistic models, $\BA$ must agree with
-the second-moment of the cluster proportions, which is given as a Bayesian prior
-in the models.
+Then the original Anchor Word algorithm decomposes $C$ into $B A B^T$ by
+\cref{alg:awa}, where $A \in \BBR^{K \Times K}$ is the cluster correlation
+matrix, whose entry $A_{kl}$ captures the joint probability between two latent
+clusters $k$ and $l$.\footnote{$C$ is proven to be a by far more robust
+estimator than $H$ in \cite{AGM}.  But actual construction of $C$ in 
+\cite{arora2013practical} is slightly misleading without dividing by $M$. We
+report the full equations in this paper.} In the limit, using data generated
+according to the correct probabilistic models, $A$ must agree with the
+second\hyp{}moment of the cluster proportions, which is given as a Bayesian
+prior in the models.
 
 \begin{figure}[ht]
 	\begin{algorithm}[H]
 		\SetKwInput{KwInput}{Input}
 		\SetKwInput{KwOutput}{Output}
 		\DontPrintSemicolon
-		\KwInput{Object co-occurrence $\BC \In \BBR^{N \Times N}$\\
+		\KwInput{Object co-occurrence $C \in \BBR^{N \Times N}$\\
 		\hspace{28px} The number of clusters $K$}
-		\KwOutput{Anchor objects $\BS \Eq \{s_1, ..., s_K\}$\\ 
-		\hspace{36px} Latent clusters $\BB \In \BBR^{N \Times K}$\\
-		\hspace{36px} Cluster correlations $\BA \In \BBR^{K \Times K}$}
+		\KwOutput{Anchor objects $S \Eq \{s_1, ..., s_K\}$\\ 
+		\hspace{36px} Latent clusters $B \in \BBR^{N \Times K}$\\
+		\hspace{36px} Cluster correlations $A \in \BBR^{K \Times K}$}
 		\Begin{
-			$L_1$\hyp{}normalize the rows of $\BC$ to form $\BCbar$.\;
+			$L_1$\hyp{}normalize the rows of $C$ to form $\Cbar$.\;
 			\vspace{-1px}
-			Find $\BS$ via the column pivoted QR on $\BCbar^T$.\;
+			Find $S$ via the column pivoted QR on $\Cbar^T$.\;
 			\vspace{3px}
-			Find $\BBreve$ with $\BBreve_{ki} \Eq p(\text{cluster}\; k \; | \; 
+			Find $\Bbreve$ with $\Bbreve_{ki} \Eq p(\text{cluster}\; k \; | \; 
 			\text{object}\; i)$ by
 			solving $N$ simplex\hyp{}constrained least squares 
-			in parallel to minimize $\|\BCbar \Minus \BBreve^T \BCbar_{\BS
-			\ast}\|_F$.\;
+			in parallel to minimize $\norm{\Cbar \Minus \Bbreve^T \Cbar_{S\ast}}_F$.\;
 			\vspace{2px}
-			Recover $\BB$ from $\BBreve$ by the Bayes' rule.\;
-			Recover $\BA$ by $\BB_{\BS\ast}^{-1}\BC_{\BS\BS}\BB_{\BS\ast}^{-1}$.
+			Recover $B$ from $\Bbreve$ by the Bayes' rule.\;
+			Recover $A$ by $B_{S\ast}^{-1}C_{SS}B_{S\ast}^{-1}$.
 		}
 		\caption{Anchor Word algorithm (AW)}
 	\label{alg:awa}        
@@ -63,24 +62,24 @@ in the models.
 		\DontPrintSemicolon
 	    \textbf{Input/Output}: Same as Algorithm \ref{alg:awa}\;
 		\Begin{
-			$\BC_0 \leftarrow \BC$\;
-			\Repeat{converging to a certain $\BC^*$}{
+			$C_0 \leftarrow C$\;
+			\Repeat{converging to a certain $C^*$}{
 			    \vspace{1px}
-				$(\BU,\BLambda_K) \leftarrow$ Truncated-Eig($\BC_{t}, K$)\;
-				$\BLambda_K^+ \leftarrow \max(\BLambda_K, 0)$\;
+				$(U,\Lambda_K) \leftarrow$ Truncated-Eig($C_{t}, K$)\;
+				$\Lambda_K^+ \leftarrow \max(\Lambda_K, 0)$\;
 				\vspace{4px}
-				$\BC^{\PSD_K} \leftarrow \BU \BLambda_K^+ \BU^T$\;
+				$C^{\PSD_K} \leftarrow U \Lambda_K^+ U^T$\;
 				\vspace{-2px}
-				$\BC^\NOR \leftarrow \BC^{\PSD_K} + \frac{1-\sum_{ij}{\BC^{\PSD_K}_{ij}}
-				}{N^2}\Be\Be^T$\;
+				$C^\NOR \leftarrow C^{\PSD_K} + \frac{1-\sum_{ij}{C^{\PSD_K}_{ij}}
+				}{N^2}ee^T$\;
 				\vspace{2px}
-				$\BC^\NN \leftarrow \max(\BC^\NOR, 0)$\;
+				$C^\NN \leftarrow \max(C^\NOR, 0)$\;
 				\vspace{2px}
-				$\BC_{t+1} \leftarrow \BC^\NN$
+				$C_{t+1} \leftarrow C^\NN$
 				\vspace{2px}
 			}
 			\vspace{1px}
-			$(\BS, \BB, \BA) \leftarrow$ AW$(\BC^*, K)\;\;$ (Algorithm \ref{alg:awa})
+			$(S, B, A) \leftarrow$ AW$(C^*, K)\;\;$ (Algorithm \ref{alg:awa})
 		}
 		\caption{Rectified AW algorithm (RAW)}
 	\label{alg:rawa}        
@@ -89,49 +88,48 @@ in the models.
 
 As with other spectral algorithms for latent variable models 
 \cite{hsu2012spectral,anandkumar2012}, the decomposition as described so far may
-fail to learn high-quality clusters due to \textit{model-data  mismatch} 
+fail to learn high\hyp{}quality clusters due to \textit{model-data  mismatch} 
 \cite{kulesza2014low}. Under the probabilistic model assumed to generate the
-data, the expected value of the co-occurrence should not only be normalized to
-sum to one ($\NOR$) and be entry-wise non-negative ($\NN$), but it should also
-be positive semi-definite with rank equal to the number of clusters $K$ 
-($\PSD_K$) \cite{moontae2015nips}. However, the empirical $\BC$ from real data
-is often indefinite and full-rank due to sample noise\footnote{Rectification
-still improves the quality of clusters on the synthetic data that is generated
-from our models.} and the unbiased construction of $\BC$ in Equation 
-\eqref{eqn:unbiased}, which penalizes all diagonal entries. The 
-\textbf{Rectified Anchor Word (RAW)} algorithm has an additional rectification
-step that enforces that $\BC$ should enjoy the expected structures
+data, the expected value of the co\hyp{}occurrence should not only be normalized
+to sum to one ($\NOR$) and be entry\hyp{}wise non\hyp{}negative ($\NN$), but it
+should also be positive semi\hyp{}definite with rank equal to the number of
+clusters $K$ ($\PSD_K$) \cite{moontae2015nips}. However, the empirical $C$
+from real data is often indefinite and full\hyp{}rank due to sample noise
+\footnote{Rectification still improves the quality of clusters on the synthetic
+data that is generated from our models.} and the unbiased construction of $C$
+in \cref{eqn:unbiased}, which penalizes all diagonal entries. The 
+\textbf{Rectified Anchor Word (RAW)} algorithm has an additional rectification step that enforces that $C$ should enjoy the expected structures
 before running the main algorithm. In \cite{moontae2015nips}, an Alternating
-Projection (AP) rectification as given in Algorithm \ref{alg:rawa} is used to
+Projection (AP) rectification as given in \cref{alg:rawa} is used to
 overcome the gap between the underlying assumptions of our models and the actual
 data.
 
 Rectification is also important for addressing the issue of \textit{outlier
 bias}. Real data often exhibits rare objects that are only present in a few
-examples. The corresponding co-occurrence of these objects are inevitably sparse
-with large variance, but the greedy anchor selection favors choosing these
-outliers due to $L_1$ normalization of $\BC$. Previous work tried to bypass this
-problem by oversampling clusters by the number of outliers under some additional
-identifiability assumptions \cite{gillis2014fast}. This approach is not always
-feasible, especially for a large vocabulary that introduces many low frequency
-objects. When synonyms and short documents cause undesirable sparsity to Latent
-Semantic Analysis \cite{landauer1998introduction}, projection onto the leading
-eigen-subspace blurs sparse co-occurrences. Similarly, $\PSD_K$-projection turns
-out to significantly reduce outlier bias, and the remaining projections are
-useful for maintaining the probabilistic structures of $\BC$, which then allow
-users to recover $\BB$ and $\BA$ in Algorithm \ref{alg:awa}.
+examples. The corresponding co\hyp{}occurrence of these objects are inevitably
+sparse with large variance, but the greedy anchor selection favors choosing
+these outliers due to $L_1$ normalization of $C$. Previous work tried to
+bypass this problem by oversampling clusters by the number of outliers under
+some additional identifiability assumptions \cite{gillis2014fast}. This approach
+is not always feasible, especially for a large vocabulary that introduces many
+low frequency objects. When synonyms and short documents cause undesirable
+sparsity to Latent Semantic Analysis \cite{landauer1998introduction}, projection
+onto the leading eigensubspace blurs sparse co\hyp{}occurrences. Similarly,
+$\PSD_K$\hyp{}projection turns out to significantly reduce outlier bias, and the
+remaining projections are useful for maintaining the probabilistic structures of
+$C$, which then allow users to recover $B$ and $A$ in \cref{alg:awa}.
 
 Handling a \textit{large vocabulary} is another major challenge for spectral
-methods. Even if we limit our focus only to second-order models, the space
+methods. Even if we limit our focus only to second\hyp{}order models, the space
 complexity of RAW is already $\calO(N^2)$, growing rapidly with increasing
-vocabulary. We are unable to exploit the high sparsity of $\BC$ as a single
-iteration of the AP-rectification makes $\BC$ significantly denser. The three
-projections in AP-rectification and the rest of the anchor word algorithm in
-Algorithm \ref{alg:awa} have time complexities of $\calO(N^2 K)$, $\calO(N^2)$,
-$\calO(N^2)$ and $\calO(N^2 K)$, respectively, and so pose a difficulty when
-scaling to a large vocabulary size $N$. On the other hand, the 
-\textit{separability assumption} is crucial for the second-order models, and
-while there has been a line of research that tries to relax this assumption 
+vocabulary. We are unable to exploit the high sparsity of $C$ as a single
+iteration of the AP\hyp{}rectification makes $C$ significantly denser. The three
+projections in AP\hyp{}rectification and the rest of the anchor word algorithm
+in \cref{alg:awa} have time complexities of $\calO(N^2 K)$, $\calO(N^2)$, $\calO
+(N^2)$ and $\calO(N^2 K)$, respectively, and so pose a difficulty when scaling to
+a large vocabulary size $N$. On the other hand, the \textit{separability
+assumption} is crucial for the second\hyp{}order models, and while there has
+been a line of research that tries to relax this assumption 
 \cite{bansal2014,huang2016}, it has been formally shown that most topic models
 are indeed separable if their vocabulary sizes are sufficiently larger than the
 number of clusters \cite{ding2015most}, again emphasizing the urgency of an

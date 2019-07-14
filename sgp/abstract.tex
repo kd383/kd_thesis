@@ -1,12 +1,26 @@
 For applications as varied as Bayesian neural networks, determinantal point
 processes, elliptical graphical models, and kernel learning for Gaussian
-processes, one must compute a log determinant of an $n \times n$ positive
-definite matrix, and its derivatives -- leading to prohibitive $\mathcal{O}
-(n^3)$ computations.  We propose novel $\mathcal{O}(n)$ approaches to estimating
-these quantities from only fast matrix vector multiplications (MVMs). These
-stochastic approximations are based on Chebyshev, Lanczos, and surrogate models,
-and converge quickly even for kernel matrices that have challenging spectra.  We
+processes, one must compute a log determinant of an $N \times N$ positive
+definite matrix, and its derivatives -- leading to prohibitive $\calO(N^3)$
+computations. We propose novel $\calO(N)$ approaches to estimating these
+quantities from only fast matrix\hyp{}vector multiplications. These stochastic
+approximations are based on Chebyshev, Lanczos, and surrogate models, and
+converge quickly even for kernel matrices that have challenging spectra. We
 leverage these approximations to develop a scalable Gaussian process approach to
 kernel learning. We find that Lanczos is generally superior to Chebyshev for
 kernel learning, and that a surrogate approach can be highly efficient and
 accurate with popular kernels.
+
+On the other hand, gradient information greatly enhances the performance of
+Gaussian processes in many applications, e.g., Bayesian optimization, implicit
+surface reconstruction, and terrain reconstruction. Fitting a Gaussian processes
+to function values and derivatives at $N$ points in $d$ dimensions requires
+linear solves and log determinants with an ${N(d+1)\times N(d+1)}$ positive
+definite matrix. Hence, the complexity for direct methods is $\calO(N^3d^3)$,
+scaling not only with the number of data points but also the number of
+dimensions. We adapt our methods with fast $\calO(Nd)$ matrix\hyp{}vector
+multiplications, together with pivoted Cholesky preconditioning that cuts the
+iterations to convergence by several orders of magnitude, allowing for fast
+kernel learning and prediction. Our approaches, together  with dimensionality
+reduction, allows us to scale Bayesian optimization with derivatives to
+high\hyp{}dimensional problems and large evaluation budgets.

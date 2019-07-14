@@ -1,23 +1,23 @@
-There are many cases in which fast MVMs can be achieved, but it is difficult or
-impossible to efficiently compute a log determinant.  We have developed a
-framework for scalable and accurate estimates of a log determinant and its
-derivatives relying only on MVMs.  We particularly consider scalable kernel
-learning, showing the promise of stochastic Lanczos estimation combined with a
-pre-computed surrogate model.  We have shown the scalability and flexibility of
-our approach through experiments with kernel learning for several real-world
-data sets using both Gaussian and non-Gaussian likelihoods, and highly
-parametrized deep kernels.
+There are many cases in which fast MVMs can be achieved for kernel matrices, but
+it is difficult or impossible to efficiently compute a log determinant. We have
+developed a framework for scalable and accurate estimates of a log determinant
+and its derivatives relying only on MVMs. We particularly consider scalable
+kernel learning, showing the promise of stochastic Lanczos estimation combined
+with a pre\hyp{}computed surrogate model. We have shown the scalability and
+flexibility of our approach through experiments with kernel learning for several
+real\hyp{}world data sets using both Gaussian and non\hyp{}Gaussian likelihoods,
+and highly parametrized deep kernels.
 
-Iterative MVM approaches have great promise for future exploration. We have only
-begun to explore their significant generality.  In addition to log determinants,
-the methods presented here could be adapted to fast posterior sampling, diagonal
-estimation, matrix square roots, and many other standard operations.  The
-proposed methods only depend on fast MVMs---and the structure necessary for fast
-MVMs often exists, or can be readily created.  We have here made use of SKI 
-\citep{wilson2015kernel} to create such structure. But other approaches, such as
-stochastic variational methods \citep{hensman2013uai}, could be used or combined
-with SKI for fast MVMs, as in \citep{wilson2016stochastic}.  Moreover, iterative
-MVM methods naturally harmonize with GPU acceleration, and are therefore likely
-to increase in their future applicability and popularity.  Finally, one could
-explore the ideas presented here for scalable higher order derivatives, making
-use of Hessian methods for greater convergence rates.
+When derivative data are available, they are a valuable source of
+information for Gaussian process regression; but inclusion of $d$ extra pieces
+of information per point naturally leads to new scaling issues. We introduce two
+methods to deal with these scaling issues: D-SKI and D-SKIP. Both are structured
+interpolation methods, and the latter also uses kernel product structure. We
+have also discussed practical details ---preconditioning is necessary to
+guarantee convergence of iterative methods and active subspace calculation
+reveals low-dimensional structure when gradients are available. We present
+several experiments with kernel learning, dimensionality reduction, terrain
+reconstruction, implicit surface fitting, and scalable Bayesian optimization
+with gradients. For simplicity, these examples all possessed full gradient
+information; however, our methods trivially extend if only partial gradient
+information is available.

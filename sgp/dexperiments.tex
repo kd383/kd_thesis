@@ -1,0 +1,386 @@
+The experiments in this section use the squared exponential (SE) kernel, which
+has product structure and can be used with D-SKIP; and the spline kernel, to
+which D\hyp{}SKIP does not directly apply. We use these kernels in tandem with
+D\hyp{}SKI and D\hyp{}SKIP to achieve the fast MVMs derived in 
+\cref{sgpsec:dmet}. We write D\hyp{}SE to denote the exact SE kernel with
+derivatives. 
+
+\subsection{Approximation Benchmark}
+
+D\hyp{}SKI and D\hyp{}SKIP with the SE kernel approximate the original kernel
+well, both in terms of MVM accuracy and spectral profile. Comparing D\hyp{}SKI
+and D\hyp{}SKIP to their exact counterparts in Figure \ref{fig:error_ski}, we
+see their matrix entries are very close (leading to MVM accuracy near $10^
+{-5}$), and their spectral profiles are indistinguishable. The same is true with
+the spline kernel.
+
+\begin{figure}[ht]
+  \begin{center}
+    \includegraphics[width=0.98\textwidth]{./sgp/pics/ski_error}
+    \caption{(Left two images) $\log_{10}$ error in SKI approximation and
+    comparison to the exact spectrum.(Right two images) $\log_{10}$ error in
+    SKIP approximation and comparison to the exact spectrum.}
+    \label{fig:error_ski}
+  \end{center}
+\end{figure}
+
+Additionally, scaling tests in \cref{fig:scalingmvm} verify the predicted
+complexity of D\hyp{}SKI and D\hyp{}SKIP. We show the relative fitting accuracy
+of SE, SKI, D\hyp{}SE, and D\hyp{}SKI on some standard test functions in 
+\cref{fig:testfncSKI}.
+
+\begin{figure}[ht]
+  \begin{center}
+    \includegraphics[width=\textwidth]{./sgp/pics/mvmScaling}
+    \caption{Scaling tests for D\hyp{}SKI in two dimensions and D\hyp{}SKIP in
+    11 dimensions. D\hyp{}SKIP uses fewer data points for identical matrix
+    sizes.}\label{fig:scalingmvm}
+  \end{center}
+\end{figure}
+
+\begin{table}[ht]
+  \centering
+  \caption{Relative RMSE on Test Functions Using SKI and Derivatives
+  \textsuperscript{$\alpha$}.}\label{fig:testfncSKI}
+  \begin{threeparttable}
+    \begin{tabular}{r c c c c c c}
+      \toprule 
+      & Branin & Franke & Sine Norm & Sixhump & StyTang & Hart3 \\ \midrule
+      SE & 6.02e-3 & 8.73e-3 & 8.64e-3 & 6.44e-3 & 4.49e-3 & 1.30e-2 \\
+      SKI & 3.97e-3 & 5.51e-3 & 5.37e-3 & 5.11e-3 & 2.25e-3 & 8.59e-3 \\
+      D-SE & 1.83e-3 & 1.59e-3 & 3.33e-3 & 1.05e-3 & 1.00e-3 & 3.17e-3 \\
+      D-SKI & 1.03e-3 & 4.06e-4 & 1.32e-3 & 5.66e-4 & 5.22e-4 & 1.67e-3 \\ 
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+      \item[$\alpha$]Relative RMSE error measured on 10000 testing points. Test
+      functions from~\cite{sfutest2013} includes five 2D functions (Branin,
+      Franke, Sine Norm, Sixhump, and Styblinski\hyp{}Tang) and one 3D function 
+      (Hartman). We train the SE kernel on $4000$ points, the D-SE kernel on
+      $4000/(d+1)$ points, and SKI and D-SKI with SE kernel on $10000$ points to
+      achieve comparable runtimes between methods.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+\subsection{Preconditioning}
+
+We discover that preconditioning is crucial for the convergence of iterative
+solvers using  approximation schemes such as D\hyp{}SKI and D\hyp{}SKIP. To
+illustrate the performance of conjugate gradient method with and without the
+above\hyp{}mentioned truncated pivoted Cholesky preconditioner, we test the
+D\hyp{}SKI on 2D Franke function with $2000$ data points, and D\hyp{}SKIP on 5D
+Friedman function with $1000$ data points. In both cases, we compute a pivoted
+Cholesky decomposition truncated at rank $100$ for preconditioning, and the
+number of steps it takes for CG/PCG to converge is demonstrated in 
+\cref{fig:precond} below. It is clear that preconditioning universally and
+significantly reduces the number of steps required for convergence.
+
+\begin{figure}[ht]
+  \begin{center}
+    \includegraphics[width=\textwidth]{./sgp/pics/precond}
+    \caption{The color shows $\log_{10}$ of the number of iterations to reach a
+    tolerance of $1\ee{-4}$. The first row compares D\hyp{}SKI with and without
+    a preconditioner. The second row compares D\hyp{}SKIP with and without a
+    preconditioner. The red dots represent no convergence. The y\hyp{}axis shows
+    $\log_{10}(\ell)$ and the x\hyp{}axis $\log_{10}(\sigma)$ and we used a
+    fixed value of $s=1$.}\label{fig:precond}
+  \end{center}
+\end{figure}
+
+\subsection{Dimensionality Reduction}
+
+We apply active subspace pre\hyp{}processing to the 20 dimensional Welsh test
+function in \cite{ben2007modeling}. The top six eigenvalues of its gradient
+covariance matrix are well separated from the rest as seen in 
+\cref{fig:dir_var}. However, the function is far from smooth  when projected
+onto the leading 1D or 2D active subspace, as 
+\crefrange{fig:d1_sca}{fig:joint_sca} indicates, where the color shows the
+function value.
+
+\begin{figure}[ht]
+  \begin{center}
+    \begin{subfigure}{0.47\textwidth}
+      \centering
+      \captionsetup{justification=centering}
+      \includegraphics[width=\textwidth,trim=1cm .5cm 2.5cm 1.5cm,clip]
+      {./sgp/pics/dir_var}
+      \caption{Log Directional Variation}\label{fig:dir_var}
+    \end{subfigure}
+    %
+    \begin{subfigure}{0.47\textwidth}
+      \centering
+      \captionsetup{justification=centering}
+      \includegraphics[width=\textwidth,trim=1cm .5cm 2.5cm 1.5cm,clip]
+      {./sgp/pics/d1scatter}
+      \caption{First Active Direction}\label{fig:d1_sca}
+    \end{subfigure}
+    %
+    \begin{subfigure}{0.47\textwidth}
+      \centering
+      \captionsetup{justification=centering}
+      \includegraphics[width=\textwidth,trim=1cm .5cm 2.5cm 1.5cm,clip]
+      {./sgp/pics/d2scatter}
+      \caption{Second Active Direction}\label{fig:d2_sca}
+    \end{subfigure}
+    %
+    \begin{subfigure}{0.47\textwidth}
+      \centering
+      \captionsetup{justification=centering}
+      \includegraphics[width=\textwidth,trim=1cm .5cm 2.5cm 1.5cm,clip]
+      {./sgp/pics/jointscatter}
+      \caption{Leading 2D Active Subspace}\label{fig:joint_sca}
+    \end{subfigure}
+    \caption{\cref{fig:dir_var} shows the top $10$ eigenvalues of the gradient
+    covariance. Welsh is projected onto the first and second active direction in
+    \ref{fig:d1_sca} and \ref{fig:d2_sca}. After joining them together, we see
+    in \ref{fig:joint_sca} that points of different color are highly mixed, indicating a very spiky surface.} \label{fig:dim_red}
+  \end{center}
+\end{figure}
+
+We therefore apply D\hyp{}SKI and D\hyp{}SKIP on the 3D and 6D active subspace,
+respectively, using $5000$ training points, and compare the prediction error
+against D\hyp{}SE with $190$ training points because of our scaling advantage. 
+\cref{tab:dim_red} reveals that while the 3D active subspace fails to capture
+all the variation of the function, the 6D active subspace is able to do so.
+These properties are demonstrated by the poor prediction of D\hyp{}SKI in 3D and
+the excellent prediction of D\hyp{}SKIP in 6D. 
+
+\begin{table}[ht]
+  \centering
+  \caption{Relative RMSE and SMAE prediction error for Welsh
+  \textsuperscript{$\alpha$}.}\label{tab:dim_red}
+  \begin{threeparttable}
+    \begin{tabular}{r c c c}
+      \toprule
+      & D-SE & D-SKI (3D) & D-SKIP (6D) \\ \midrule
+      RMSE & 4.900e-02 & 2.267e-01 & 3.366e-03 \\
+      SMAE & 4.624e-02 & 2.073e-01 & 2.590e-03 \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+      \item[$\alpha$]The D\hyp{}SE kernel is trained on $4000/(d+1)$ points,
+      with D\hyp{}SKI and D\hyp{}SKIP trained on $5000$ points. The 6D active
+      subspace is sufficient to capture the variation of the test function.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+\subsection{Rough Terrain Reconstruction}
+
+Rough terrain reconstruction is a key application in robotics 
+\cite{gingras2010rough, konolige2010large}, autonomous navigation 
+\cite{hadsell2010accurate}, and geostatistics. Through a set of terrain
+measurements, the problem is to predict the underlying topography of some
+region. In the first example, we consider roughly $23$ million 
+non\hyp{}uniformly sampled elevation measurements of Mount St. Helens obtained
+via LiDAR \cite{sthelen2002lidar}. We bin the measurements into a $970\times
+950$ grid, and downsample to a $120\Times 117$ grid. Derivatives are
+approximated using a finite difference scheme.
+
+\begin{figure}[ht]
+  \begin{center}
+    \includegraphics[width=\textwidth, height=0.47\textwidth, trim = 0cm 0cm 0cm
+    0cm,clip]{./sgp/pics/mountainContour}
+    \caption{On the left is the true elevation map of Mount St. Helens. In the
+    middle is the elevation map calculated with the SKI. On the right is the
+    elevation map calculated with D-SKI.}\label{fig:MtSH_map}
+  \end{center}
+\end{figure}
+
+We randomly select $90\%$ of the grid for training and the remainder for
+testing. We do not include results for D-SE, as its kernel matrix has dimension
+roughly $4\Times10^4$. We plot contour maps predicted by SKI and D-SKI
+in \cref{fig:MtSH_map} --- the latter looks far closer to the ground truth
+than the former. This is quantified in the following table:
+
+\begin{table}[ht]
+  \centering
+  \caption{Hyperparameters Recovered, Recovery SMAE, and Recovery Time for SKI
+  and D-SKI on Mountain St. Helens Data\textsuperscript{$\alpha$}.}
+  \label{tab:mtsthelens}
+  \begin{threeparttable}
+    \begin{tabular}{r c c c c c c c}
+      \toprule
+      & $\ell$ & $s$ & $\sigma_1$ & $\sigma_2$ & SMAE\textsubscript{test} &
+      SMAE\textsubscript{all} & Time[s]\\ \midrule
+      SKI & 35.196 & 207.689 & 12.865 & n.a. & 0.0308 & 0.0357 & 37.67\\
+      D-SKI & 12.630 & 317.825 & 6.446 & 2.799 & 0.0165 & 0.0254 & 131.70\\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+      \item[$\alpha$] $\sigma_1$ and $\sigma_2$ are the noise parameters for
+      value and gradient, respectively.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+In the second example, the Korean Peninsula elevation and bathymetry dataset
+\citep{MatlabMTB} is sampled at a resolution of 12 cells per degree. It has
+$180\times 240$ entries on a rectangular grid, among which we take $171\times
+231$ interior points as the test data a smaller subgrid of $17\times 23$ points
+as the training data. To reduce data noise, we apply a Gaussian filter with
+$\sigma_{\text{filter}} = 2$ as a pre\hyp{}processing step. We observe that the 
+recovered surfaces with SKI and D\hyp{}SKI highly resemble the respective
+counterparts with exact computation, and incorporating gradient information
+enables us to recover more details of the terrain.
+
+\begin{figure}[ht]
+  \begin{center}
+    \begin{subfigure}{0.30\textwidth}
+      \centering
+      \captionsetup{justification=centering}
+      \includegraphics[width=\textwidth,trim=9cm 6cm 9cm 10cm,clip]
+      {./sgp/pics/korea_true.png}
+      \caption{Ground Truth}\label{fig:korea_true}
+    \end{subfigure}
+    \begin{subfigure}{0.30\textwidth}
+      \centering
+      \captionsetup{justification=centering}
+      \includegraphics[width=\textwidth,trim=9cm 6cm 9cm 10cm,clip]
+      {./sgp/pics/korea_ski.png}
+      \caption{SKI}\label{fig:korea_ski}
+    \end{subfigure}
+    \begin{subfigure}{0.30\textwidth}
+      \centering
+      \captionsetup{justification=centering}
+      \includegraphics[width=\textwidth,trim=9cm 6cm 9cm 10cm,clip]
+      {./sgp/pics/korea_ski_g.png}
+      \caption{D-SKI}\label{fig:korea_ski_g}
+    \end{subfigure}
+    \caption{D\hyp{}SKI is clearly able to capture more detail in the map than
+    SKI.  Note that inclusion of derivative information in this case leads to a
+    negligible increase in calculation time.}\label{fig:korea_map}
+  \end{center}
+\end{figure}
+
+\begin{table}[ht]
+  \centering
+  \caption{Hyper\hyp{}parameters Recovered, Recovery SMAE, and Recovery Time for
+  SKI and D\hyp{}SKI on Korea Peninsula Data.}\label{tab:korea_peninsula}
+  \begin{tabular}{r c c c c c}
+  \toprule
+  & $\ell$ & $s$ & $\sigma$ & SMAE & Time[s]\\ \midrule
+  SKI & $16.786$ & $855.406$ & $184.253$ & $0.1521$ & $10.094$\\
+  D-SKI & $9.181$ & $719.376$ & $29.486$ & $0.0746$ & $11.643$\\
+  \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Implicit Surface Reconstruction}
+Reconstructing surfaces from point cloud data and surface normals is a standard
+problem in computer vision and graphics. One popular approach is to fit an
+implicit function that is zero on the surface with gradients equal to the
+surface normal. Local Hermite RBF interpolation has been considered
+in prior work \cite{macedo2011hermite}, but this approach is sensitive to noise.
+In our experiments, using a GP instead of splining reproduces implicit surfaces
+with very high accuracy.  In this case, a GP with derivative information is
+required, as the function values are all zero.
+
+\begin{figure}[ht]
+  \begin{center}
+    \includegraphics[width=\textwidth]{./sgp/pics/bunny}
+    \caption{(Left) Original surface (Middle) Noisy surface (Right) SKI
+    reconstruction from noisy surface ($s=0.4,\,\sigma=0.12$).}\label{fig:bunny}
+  \end{center}
+\end{figure}
+
+In \cref{fig:bunny}, we fit the Stanford bunny using $25000$ points and
+associated normals, leading to a $K^{\nabla}$ matrix of dimension $10^5$,
+clearly far too large for exact training. We therefore use SKI with the
+thin\hyp{}plate spline kernel, with a total of 30 grid points in each dimension.
+The left image is a ground truth mesh of the underlying point cloud and normals.
+The middle image shows the same mesh, but with heavily noised points and
+normals. Using this noisy data, we fit a GP and reconstruct a surface shown in
+the right image, which looks very close to the original.
+
+\subsection{Bayesian Optimization with Derivatives}
+
+Prior work examines Bayesian optimization (BO) with derivative information in
+low\hyp{}dimensional spaces to optimize model hyper\hyp{}parameters 
+\citep{wu2017bayesian}. Wang et al.~consider high\hyp{}dimensional BO (without
+gradients) with random projections uncovering low\hyp{}dimensional structure~
+\citep{wang2013bayesian}. We propose BO with derivatives and dimensionality
+reduction via active subspaces, detailed in \cref{alg:BO}.
+
+\begin{figure}[htbp]
+  \begin{algorithm}[H]
+    \SetKwInput{KwInput}{Input}
+    \SetKwInput{KwOutput}{Output}
+    \DontPrintSemicolon
+    \While{Budget not exhausted}{
+      Calculate active subspace projection $P \In \mathbb{R}^{D \times d}$ using
+      sampled gradients\;
+      Optimize acquisition function,  $u_{n+1} = \text{arg max }\mathcal{A}(u)$
+      with $x_{n+1} = Pu_{n+1}$\;
+      Sample point $x_{n+1}$, value $f_{n+1}$, and gradient $\nabla f_{n+1}$\;
+      Update data $\mathcal{D}_{i+1} = \mathcal{D}_i \cup \{ x_{n+1}, f_{n+1},
+      \nabla f_{n+1}\}$\;
+      Update hyper\hyp{}parameters of GP with gradient defined by kernel $k
+      (P^Tx, P^Tx')$\;
+    }
+    \caption{BO with derivatives and active subspace learning}\label{alg:BO}
+  \end{algorithm}
+\end{figure}
+
+\cref{alg:BO} estimates the active subspace and fits a GP with derivatives in the
+reduced space.  Kernel learning, fitting, and optimization of the acquisition
+function all occur in this low\hyp{}dimensional subspace.  In our tests, we use
+the expected improvement (EI) acquisition function, which involves both the mean
+and predictive variance.  We consider two approaches to rapidly evaluate the
+predictive variance $v(x) = k(x,x)-\K{xX} \Ktil{}^{-1} \K{Xx}$ at a test point
+$x$.  In the first approach, which provides a biased estimate of the predictive
+variance, we replace $\K{}^{-1}$ with the preconditioner solve computed by
+pivoted Cholesky; using the stable QR-based evaluation algorithm, we have
+\begin{equation}\label{eqn:qrpred}
+  v(x) \approx \hat{v}(x) \equiv k(x,x) - \sigma^{-2} (\norm{\K
+  {Xx}}^2-\norm{Q_1^T \K{Xx}}^2)\,.
+\end{equation}
+We note that the approximation $\hat{v}(x)$ is always a (small) overestimate of
+the true predictive variance $v(x)$. In the second approach, we use a randomized
+estimator as in~\cite{Bekas:2007:EDM} to compute the predictive variance at many
+points $X'$ simultaneously, and use the pivoted Cholesky approximation as a
+control variate to reduce the estimator variance:
+\begin{equation}\label{eqn:predcv}
+  v_{X'} = \diag(\K{X'X'}) - \BBE_z\left[z \odot (\K{X'X} \Ktil{}^{-1} \K{XX'}z
+  - \K{X'X} M^{-1} \K{XX'} z)\right] -\hat{v}_{X'}\,.
+\end{equation}
+The latter approach is unbiased, but gives very noisy estimates unless many
+probe vectors $z$ are used.  Both the pivoted Cholesky approximation to the
+predictive variance and the randomized estimator resulted in similar optimizer
+performance in our experiments.
+ 
+\begin{figure}[ht]
+  \begin{center}
+    \begin{subfigure}{0.47\textwidth}
+      \centering
+      \captionsetup{justification=centering}
+      \includegraphics[width=\textwidth,trim=1.5cm 0cm 1.5cm 1cm,clip]
+      {./sgp/pics/ackley_50_5}
+      \caption{BO on Ackley}\label{fig:bo_ack}
+    \end{subfigure}
+    \begin{subfigure}{0.47\textwidth}
+      \centering
+      \captionsetup{justification=centering}
+      \includegraphics[width=\textwidth,trim=1.5cm 0cm 1.5cm .5cm,clip]
+      {./sgp/pics/rastrigin_50_5}
+      \caption{BO on Rastrigin}\label{fig:bo_ras}
+    \end{subfigure}
+    \caption{In the following experiments, 5D Ackley and 5D Rastrigin are
+    embedded into 50 a dimensional space. We run \cref{alg:BO}, comparing it with
+    BO exact, multi\hyp{}start BFGS, and random sampling. D\hyp{}SKI with active
+    subspace learning clearly outperforms the other methods.}\label{fig:bo}
+  \end{center}
+\end{figure}
+
+To test \cref{alg:BO}, we mimic the experimental set up in 
+\cite{wang2013bayesian}: we minimize the 5D Ackley and 5D Rastrigin test
+fuctions \cite{sfutest2013}, randomly embedded respectively in $[-10, 15]^{50}$
+and $[-4, 5]^{50}$. We fix $d=2$, and at each iteration pick two directions in
+the estimated active subspace at random to be our active subspace projection
+$P$. We use D\hyp{}SKI as the kernel and EI as the acquisition function. The
+results of these experiments are shown in \cref{fig:bo_ack,fig:bo_ras}, in which
+we compare Algorithm 1 to three other baseline methods: BO with EI and no
+gradients in the original space; multi\hyp{}start BFGS with full gradients; and
+random search. In both experiments, the BO variants perform better than the
+alternatives, and our method outperforms standard BO.

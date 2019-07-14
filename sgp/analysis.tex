@@ -1,3 +1,4 @@
+\subsection{First-Order Analysis}
 In addition to the usual errors from sources such as solver termination criteria
 and floating point arithmetic, our approach to kernel learning involves several
 additional sources of error: we approximate the true kernel with one that
@@ -5,10 +6,11 @@ enables fast MVMs, we approximate traces using stochastic estimation, and we
 approximate the actions of $\log(\Ktil{})$ and $\Ktil{}^{-1}$ on probe
 vectors.
 
-We can compute first-order estimates of the sensitivity of the log likelihood to
-perturbations in the kernel using the same stochastic estimators we use for the
-derivatives with respect to hyperparameters. For example, if $\calL^{\Ref}$
-is the likelihood for a reference kernel $\Ktil{}^{\Ref} = \Ktil{} + E$, then
+We can compute first\hyp{}order estimates of the sensitivity of the log
+likelihood to perturbations in the kernel using the same stochastic estimators
+we use for the derivatives with respect to hyper\hyp{}parameters. For example,
+if $\calL^{\Ref}$ is the likelihood for a reference kernel $\Ktil{}^{\Ref} =
+\Ktil{} + E$, then
 \begin{equation}
   \calL^{\Ref}(\theta|y) = \calL(\theta|y) - \frac{1}{2} \left(\BBE\left
   [g^TEz\right] - \alpha^T E \alpha \right) + \calO(\norm{E}^2)\,,
@@ -34,7 +36,7 @@ we typically only use 5--10 probes --- and we use the sample variance across
 these probes to estimate {\em a posteriori} the stochastic component of the
 error in the log likelihood computation.  If we are willing to estimate the
 Hessian of the log likelihood, we can increase rates of convergence for finding
-kernel hyperparameters.
+kernel hyper\hyp{}parameters.
 
 The Chebyshev approximation scheme requires $\calO(\!\!\sqrt{\kappa}
 \log(\kappa/\epsilon))$ steps to obtain an $\calO(\epsilon)$ approximation error
@@ -50,3 +52,42 @@ interval, as is the case with log determinants of many kernel matrices.  Hence,
 we recommend the Lanczos approach over the Chebyshev approach in general.  In
 all of our experiments, the error associated with approximating $z^T \log(\Ktil
 {}) z$ by Lanczos was dominated by other sources of error.
+
+\subsection{Comparison to Reference Kernel}
+\label{sup:refkernel}
+
+Suppose more generally that $\tilde K = K + \sigma^2 I$ is an approximation to a
+reference kernel matrix $\tilde K^{\Ref} = K^{\Ref} + \sigma^2 I$, and let $E =
+K^{\Ref}-K$.  Let $\mathcal{L}(\theta | y)$ and $\calL^{\Ref}(\theta | y)$ be
+the log likelihood functions for the two kernels; then
+\begin{align}
+  \calL^{\Ref}(\theta | y) &=
+  \calL(\theta | y) -\frac{1}{2} \left[\tr(\tilde K^{-1} E) - \alpha^T E \alpha
+  \right] + \calO(\|E\|^2) \\
+  \frac{\partial}{\partial \theta_i} \calL^{\Ref}(\theta | y) &=
+  \frac{\partial}{\partial \theta_i} \mathcal{L}(\theta | y) - \frac{1}{2}
+  \left[\tr\left( \tilde K^{-1} \frac{\partial E}{\partial \theta_i} - \tilde K^
+  {-1} \frac{\partial \tilde K}{\partial \theta_i} \tilde K^{-1} E \right) -
+  \alpha^T \frac{\partial E}{\partial \theta_i}  \alpha \right] + \calO
+  (\norm{E}^2).
+\end{align}
+If we are willing to pay the price of a few MVMs with $E$, we can use these
+expressions to improve our maximum likelihood estimate. Let $z$ and $w$ be
+independent probe vectors with $g = \tilde K^{-1} z$ and $\hat{g} = \tilde K^
+{-1} w$. To estimate the trace in the derivative computation, we use the
+standard stochastic trace estimation approach together with the observation that
+$\BBE[ww^T] = I$:
+\begin{equation}
+ \tr\left(\tilde K^{-1} \frac{\partial E}{\partial \theta_i} - \tilde K^{-1} 
+ \frac{\partial \tilde K}{\partial \theta_i} \tilde K^{-1} E \right) =
+ \BBE\left[ g^T \frac{\partial E}{\partial \theta_i} z - g^T \frac{\partial K}
+ {\partial \theta_i} w \hat{g}^T E z\right]
+\end{equation}
+This linearization may be used directly (with a stochastic estimator);
+alternately, if we have an estimates for $\norm{E}$ and $\norm{\partial
+E/\partial \theta_i}$, we can substitute these in order to get estimated bounds
+on the magnitude of the derivatives. Coupled with a similar estimator for the
+Hessian of the likelihood function, we can use this method to compute the
+maximum likelihood parameters for the fast kernel, then compute a correction
+$-H^{-1} \nabla_{\theta} \calL^{\Ref}$ to estimate the maximum likelihood
+parameters of the reference kernel.

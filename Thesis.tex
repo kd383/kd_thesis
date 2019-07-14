@@ -28,13 +28,14 @@
 \usepackage[numbers,compress]{natbib}
 
 % Algorithm
-\usepackage[ruled]{algorithm2e}
+\usepackage[ruled,algochapter]{algorithm2e}
 
 % Others
-% \usepackage{accents}
+\usepackage{accents}
 \usepackage{bm}
 \usepackage{booktabs}
 \usepackage[format=hang]{caption}
+\usepackage{chngcntr}
 \usepackage{colortbl}
 \usepackage{enumitem}
 \usepackage[OT1]{fontenc}
@@ -110,7 +111,7 @@
   \if@intoc\addcontentsline{toc}{section}{\nomname}\fi%
   \nompreamble
   \list{}{%
-    \labelwidth1cm
+    \labelwidth1.25cm
     \leftmargin\labelwidth
     \advance\leftmargin\labelsep
     \itemsep\nomitemsep
@@ -128,9 +129,13 @@
 }
 
 
-\title {Randomized numerical linear algebra for large-scale matrix data}
-\author {Kun Dong}
-\conferraldate {August}{2019}
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+\counterwithin{theorem}{chapter}
+
+\title{Randomized numerical linear algebra for large-scale matrix data}
+\author{Kun Dong}
+\conferraldate{August}{2019}
 \degreefield {Ph.D.}
 \copyrightholder{Kun Dong}
 \copyrightyear{2019}
@@ -160,7 +165,6 @@ This document is dedicated to my parents and wife.
 \contentspage
 \tablelistpage
 \figurelistpage
-\makenomenclature
 
 \normalspacing \setcounter{page}{1} \pagenumbering{arabic}
 \pagestyle{cornell} \addtolength{\parskip}{0.5\baselineskip}

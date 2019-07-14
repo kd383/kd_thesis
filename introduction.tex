@@ -1,57 +1,56 @@
 Today massive datasets appear in countless applications across scientific
-fields. Empowered by the the modern computational infrastructure, researchers
-have spent tremendous effort in the past few decades to take advantage of the
-information explosion. Machine learning, as one of the fields that rely heavily
-on large data, has witnessed incredible development and had far-reaching impact
-on nearly every area of scientific discovery. Even in traditional fields, such
-as partial differential equations, people are working on larger and more complex
-systems, hence more sizable datasets. Typically, matrices arise as the natural
-representation of data in both explicit and implicit ways. The most common form
-is the object\hyp{}feature matrices; there are also co-occurrence matrices and
-kernel matrices capturing the relationship between pairs of objects; sometimes
-they represent linear operators such as Laplacian matrices. In most instances,
-the matrices grow in size with the datasets, so handling them becomes an
-inevitable challenge. Thus, numerical linear algebra (NLA), the study of 
-matrix\hyp{}based numerical methods, promptly becomes the driving force behind
-a lot of these applications.
+fields. Empowered by modern computational infrastructure, researchers have spent
+tremendous effort in the past few decades to take advantage of the information
+explosion. Machine learning, as one of the fields that rely heavily on 
+large\hyp{}data, has witnessed incredible development and had far\hyp{}reaching
+impact on nearly every area of scientific discovery. Even in traditional fields,
+such as partial differential equations, researchers are working on larger and
+more complex systems, resulting in more sizable datasets. Typically, matrices
+arise as the natural representation of data in both explicit and implicit ways.
+Object\hyp{}feature matrices are the most common type; second\hyp{}order models,
+such as co-occurrence matrices and kernel matrices, capture the relationship
+between pairs of objects; Laplacian matrices and other linear operators describe
+dynamics on objects. In most instances, the matrices grow in size with the
+datasets, thus manipulating them becomes an inevitable challenge. Numerical
+linear algebra (NLA), the study of matrix\hyp{}based numerical methods,
+promptly becomes the driving force behind a lot of these applications.
 
 Similarly, this ongoing trend of big data has led NLA into new and exciting
 directions. Traditionally, NLA has focused on deterministic, 
-factorization\hyp{}based methods. While they usually have strong theoretical
-guarantees and highly optimized implementations, the emerging problems have far
-exceeded the scale they are designed for, even with present\hyp{}day
-computational power. As a result, a great number of novel algorithms
-centered around scalability are developed in response to this increasing demand.
-The class of randomized methods is one particular approach that brings
-efficiency through introducing stochasticity. Randomized NLA aims at building
-fast algorithms that return sufficiently good approximation to solutions. Both
-``fast'' and ``good'' are measured relatively depending on the underlying
-problem, but they are usually supported by matrix perturbation theory and
-probability theory. Even though scalability is the foremost objective,
-randomized NLA also designs algorithms around other criteria, e.g.
-interpretability, robustness. \citet{drineas2016randnla} give a nice overview
-for the recent development in randomized NLA.
+factorization\hyp{}based methods. While these methods usually have strong
+theoretical guarantees and highly optimized implementations, emerging problems
+have far exceeded the scale they are designed for, even with present\hyp{}day
+computational power. As a result, a great number of novel algorithms centered
+around scalability have been developed in response to this increasing demand.
+Randomized methods is one particular approach that brings efficiency through
+introducing stochasticity. Randomized NLA aims at building fast algorithms that
+return sufficiently good approximation to solutions. Both ``fast'' and ``good''
+are measured relatively depending on the underlying problem, but the results are
+usually supported by matrix perturbation theory and probability theory. Even
+though scalability is the foremost objective, randomized NLA also designs
+algorithms around other criteria, e.g., interpretability, robustness. 
+\citet{drineas2016randnla} provides a great overview of the recent development
+in randomized NLA.
 
-This dissertation applies randomized NLA to large-scale matrix data in two
+This dissertation applies randomized NLA to large-scale data matrix in two
 settings:
 \begin{enumerate}
 	\item The matrix contains low\hyp{}order information compared to its size,
-	such as low\hyp{}rank matrix and structured matrix. The goal is to efficiently
-	obtain a compressed representation of the matrix, ideally in a interpretable
-	way.
+	such as low\hyp{}rank matrix and structured matrix. The goal is to
+	efficiently obtain a compressed representation of the matrix, ideally in a
+	interpretable way.
 	\item Only partial information from the matrix is required. The matrix
-	could be explicitly available, but the extraction of information is
-	expensive; or the matrix is implicit, due to the cost of formation or
-	storage.
+	may be explicitly available, but the extraction of information is expensive;
+	or the matrix is implicit, due to the cost of formation or storage.
 \end{enumerate}
 
-It is worth mentioning that these two scenarios are not mutually exclusive.
-For example, \cref{ch4} covers the computation of log\hyp{}determinant for
-kernel matrices, where we can often take advantage of their low\hyp{}rank plus
-diagonal structure. The applications we work with come from network science,
-Gaussian processes regression, natural language processing, and quantum
-chemistry. The diversity in background alone is a compelling evidence for the
-versatility of randomized NLA. The outline is detailed below.
+It is worth mentioning that these two scenarios are not mutually exclusive. For
+example, \cref{ch4} covers the computation of log\hyp{}determinant for kernel
+matrices, where we can often take advantage of their low\hyp{}rank plus diagonal
+structure. The applications we work with come from network science, Gaussian
+processes regression, natural language processing, and quantum chemistry. The
+diversity in background alone is a compelling evidence for the versatility of
+randomized NLA. The outline is detailed below.
 
 \cref{ch2} covers the mathematical preliminaries as well as the common topics
 shared between the following chapters.
@@ -76,8 +75,8 @@ efficient and flexible, allowing us to work with datasets much larger than
 the traditional GP capability. Furthermore, we extend these ideas to GP
 regression on both function values and derivatives. Our approaches, together
 with dimensionality reduction and preconditioning, let us scale Bayesian
-optimization with derivatives to high-dimensional problems and large evaluation
-budgets.
+optimization with derivatives to high\hyp{}dimensional problems and large
+evaluation budgets.
 
 \cref{ch5} proposes a complete pipeline for spectral inference of topic
 models that scales gracefully with both the size of vocabulary and the dimension
@@ -85,13 +84,13 @@ of latent space. It allows us to simultaneously compress and rectify the
 co\hyp{}occurrence statistics, then learn latent variables directly from the
 compressed form without losing visible precision. We verify that our
 methods perform comparably to previous approaches on both textual and
-non-textual data.
+non\hyp{}textual data.
 
 \cref{ch6} describes how to use centroid Voronoi tessellation to accelerate
 electronic structure calculation. The recently developed interpolative separable
 density fitting decomposition compresses the redundant information in electron
-orbital pairs through a set of non-uniform interpolation points. Our method,
-implemented as a weight K-means algorithm with random initialization, achieves
-comparable accuracy to the existing procedure but at a cost negligible in the
-overall calculations. We also find that our algorithm as a continuation method
-enhances the smoothness of the potential energy surface.
+orbital pairs through a set of non\hyp{}uniform interpolation points. Our
+method, implemented as a weighted K-means algorithm with random initialization,
+achieves comparable accuracy to the existing procedure but at a cost negligible
+in the overall calculations. We also find that our algorithm, as a continuation
+method, enhances the smoothness of the potential energy surface.

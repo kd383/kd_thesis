@@ -1,0 +1,121 @@
+One standard approach to scaling GPs substitutes the exact kernel with an
+approximate kernel. When the GP fits values and gradients, one may attempt to
+separately approximate the kernel and the kernel derivatives. Unfortunately,
+this may lead to indefiniteness, as the resulting approximation is no longer a
+valid kernel. Instead, we differentiate the approximate kernel, which preserves
+positive definiteness. We do this for the SKI and SKIP kernels below, but our
+general approach applies to any approximate MVM.
+
+\subsection{D-SKI}
+
+D\hyp{}SKI (SKI with derivatives) is the standard kernel matrix for GPs with
+derivatives, but applied to the SKI kernel.  Equivalently, we differentiate the
+interpolation scheme:
+\begin{equation}\label{eqn:weightderiv}
+  k(x,x') \approx \sum_i w_i(x)k(x_i,x')\rightarrow \nabla k(x,x') \approx
+  \sum_i \nabla w_i(x) k(x_i,x')\,.
+\end{equation}
+One can use cubic convolutional interpolation \citep{keys1981cubic}, but higher
+order methods lead to greater accuracy, and we therefore use quintic
+interpolation~\cite{meijering1999image}.  The resulting D\hyp{}SKI kernel matrix
+has the form
+\begin{equation}\label{eqn:dski}
+  \begin{bmatrix} K & (\dx K)^T \\ \dx K & \ddx K \end{bmatrix}  \approx
+  \begin{bmatrix} W \\ \dx W  \end{bmatrix}  K_{UU}
+  \begin{bmatrix} W \\ \dx W  \end{bmatrix} ^T =
+  \begin{bmatrix} W\K{UU}W^T & W\K{UU} (\dx W)^T \\
+  (\dx W) \K{UU} W^T & (\dx W) \K{UU} (\dx W)^T  \end{bmatrix}\,,
+\end{equation}
+where the elements of sparse matrices $W$ and  $\dx W$ are determined by $w_i
+(x)$and $\nabla w_i(x)$ --- assuming quintic interpolation, $W$ and $\dx W$ will
+each have $6^d$ elements per row. As with SKI, we use FFTs to obtain $
+\calO(M \log M)$ MVMs with $\K{UU}$. Because $W$ and $\dx W$ have $\calO(N6^d)$
+and $\calO(Nd6^d)$nonzero elements, respectively, our MVM complexity is $\calO
+(Nd6^d + M \log M)$.
+
+\subsection{D-SKIP}
+
+Several common kernels are {\em separable}, i.e., they can be expressed as
+products of one\hyp{}dimensional kernels.  Assuming a compatible approximation
+scheme, this structure is inherited by the SKI approximation for the kernel
+matrix without derivatives,
+\begin{equation}\label{eqn:ski_sep}
+  K \approx (W_1 K_1 W_1^T) \odot (W_2 K_2 W_2^T) \odot \ldots \odot (W_d K_d
+  W_d^T)\,,
+\end{equation}
+where $A \odot B$ denotes the Hadamard product of matrices $A$ and $B$ with the
+same dimensions, and $W_j$ and $K_j$ denote the SKI interpolation and inducing
+point grid matrices in the $j$\hyp{}th coordinate direction. The same Hadamard
+product structure applies to the kernel matrix with derivatives; for example,
+for $d = 2$,
+\begin{equation} \label{eqn:skip}
+  \resizebox{.9\hsize}{!}{
+    $K^{\nabla} \approx
+    \begin{bmatrix}
+        W_1 K_1 W_1^T      & W_1 K_1 \dx W_1^T     & W_1 K_1 W_1^T \\
+        \dx W_1 K_1 W_1^T  & \dx W_1 K_1 \dx W_1^T & \dx W_1 K_1 W_1^T \\
+        W_1 K_1 W_1^T      & W_1 K_1 \dx W_1^T     & W_1 K_1 W_1^T \\
+    \end{bmatrix}
+    \odot
+    \begin{bmatrix}
+        W_2 K_2 W_2^T      & W_2 K_2 W_2^T      & W_2 K_2 \dx W_2^T \\
+        W_2 K_2 W_2^T      & W_2 K_2 W_2^T      & W_2 K_2 \dx W_2^T \\
+        \dx W_2 K_2 W_2^T  & \dx W_2 K_2 W_2^T  & \dx W_2 K_2 \dx W_2^T \\
+    \end{bmatrix}$
+  }\,.
+\end{equation}
+
+\cref{eqn:skip} expresses $K^{\nabla}$ as a Hadamard product of one dimensional
+kernel matrices. Following this approximation, we apply the SKIP reduction~
+\citep{gardner2018product} and use Lanczos to further approximate 
+\cref{eqn:skip} as $(Q_1 \Gamma_1 Q_1^T) \odot (Q_2 \Gamma_2 Q_2^T)$. This can
+be used for fast MVMs with the kernel matrix. Applied to kernel matrices with
+derivatives, we call this approach D\hyp{}SKIP.
+
+Constructing the D\hyp{}SKIP kernel costs $\calO(d^2(N + M \log M+ r^3 N \log
+d))$, and each MVM costs $\calO(d r^2 N)$ flops where $r$ is the effective rank
+of the kernel at each step (rank of the Lanczos decomposition). We achieve high
+accuracy with $r \ll N$. 
+
+\subsection{Preconditioning}
+
+Recent work \citep{cutajar2016preconditioning} has explored several 
+preconditioners for exact kernel matrices. We have had success with
+preconditioners of the form $H = \sigma^2 I + FF^T$ where $K^\nabla \approx
+FF^T$ with $F \in \BBR^{N \times r}$. Solving with the
+Sherman\hyp{}Morrison\hyp{}Woodbury formula ({\em a.k.a} the matrix inversion
+lemma) is inaccurate for small $\sigma$; we use the more stable formula $H^{-1}
+b = \sigma^{-2} (f-Q_1 (Q_1^T f))$ where $Q_1$ is computed in $\calO(r^2N)$ time
+by the economy QR factorization
+\begin{equation}\label{eqn:qrsmw}
+  \begin{bmatrix} Q_1 \\ Q_2 \end{bmatrix} =
+  \begin{bmatrix} F \\ \sigma I \end{bmatrix} R.
+\end{equation}
+In our experiments with solvers for D\hyp{}SKI and D\hyp{}SKIP, we have found
+that a truncated pivoted Cholesky factorization, $K^{\nabla} \approx (\Pi L)(\Pi
+L)^T$ works well for the low\hyp{}rank factorization. Computing the pivoted
+Cholesky factorization is cheaper than MVM\hyp{}based preconditioners such as
+Lanczos or truncated eigendecompositions as it only requires the diagonal and
+the ability to form the rows where pivots are selected. Pivoted Cholesky is a
+natural choice when inducing point methods are applied as the pivoting can
+itself be viewed as an inducing point method where the most important
+information is selected to construct a low\hyp{}rank preconditioner
+\cite{harbrecht2012low}. The D\hyp{}SKI diagonal can be formed in $\calO(Nd6^d)$
+flops while rows cost $\calO(Nd6^d + M)$ flops; for D\hyp{}SKIP both the
+diagonal and the rows can be formed in $\calO(Nd)$ flops.
+
+\subsection{Dimensionality Reduction}
+
+In many high\hyp{}dimensional function approximation problems, only a few
+directions are relevant. That is, if $f \Colon \BBR^D \to \BBR$ is a function
+to be approximated, there is often a matrix $P$ with $d < D$ orthonormal columns
+spanning an {\em active subspace} of $\BBR^D$ such that $f(x) \approx f(PP^T x)$
+for all $x$ in some domain $\Omega$ of interest~\citep{constantine2015active}. 
+The optimal subspace is given by the dominant eigenvectors of the covariance
+matrix $C = \int_\Omega \nabla f(x) \, \nabla f(x)^T \, dx$, generally estimated
+by Monte Carlo integration. Once the subspace is determined, the function can be
+approximated through a GP on the reduced space, i.e., we replace the original
+kernel $k(x,x')$ with a new kernel $\check k(x,x') = k(P^T x,P^T x')$.
+Because we assume gradient information, dimensionality reduction based on active
+subspaces is a natural pre\hyp{}processing phase before applying D\hyp{}SKI and
+D\hyp{}SKIP.

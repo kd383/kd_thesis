@@ -1,35 +1,34 @@
-The output for both methods in \S \ref{lrtmsec:lrr} is a compressed co
-\hyp{}occurrence matrix $\BC \Eq \BY\BY^T$. In this section, we present the 
-\textbf{Low-rank Anchor Word algorithm (LAW)} that reduces the time complexity
-of finding anchor objects from $\calO(N^2K)$ to $\calO(NK^2)$ by taking
-advantage of this form. We note that LAW applies whenever $\BC$ is in a low-rank
-representation, which does not have to be derived from our methods. Moreover, it
-is exact for non-negative $\BC$, but it is robust in practice when we allow
-small negative entries in $\BC$, as in the case with ENN.
+The output for both methods in \cref{lrtmsec:lrr} is a compressed 
+co\hyp{}occurrence matrix $C \Eq YY^T$. In this section, we present the 
+\textbf{Low\hyp{}rank Anchor Word algorithm (LAW)} that reduces the time
+complexity of finding anchor objects from $\calO(N^2K)$ to $\calO(NK^2)$ by
+taking advantage of this form. We note that LAW applies whenever $C$ is in a
+low\hyp{}rank representation, which does not have to be derived from our
+methods. Moreover, it is exact for non\hyp{}negative $C$, but robust in 
+practice when we allow small negative entries in $C$, as in the case with ENN.
 
 \begin{figure}[htbp]
 	\begin{algorithm}[H]
 		\SetKwInput{KwInput}{Input}
 		\SetKwInput{KwOutput}{Output}
 		\DontPrintSemicolon
-    	\KwInput{Object co-occurrence $\BC \Eq \BY \BY^T$}
-		\KwOutput{Anchor objects $\BS \Eq \{s_1, ..., s_K\}$\\ 
-		\hspace{36px} Latent clusters $\BB \In \BBR^{N \Times K}$\\
-		\hspace{36px} Cluster correlations $\BA \In \BBR^{K \Times K}$}
+    	\KwInput{Object co-occurrence $C \Eq Y Y^T$}
+		\KwOutput{Anchor objects $S \Eq \{s_1, ..., s_K\}$\\ 
+		\hspace{36px} Latent clusters $B \in \BBR^{N \Times K}$\\
+		\hspace{36px} Cluster correlations $A \in \BBR^{K \Times K}$}
 		\Begin{
-			Calculate row sums $\Bd = \BY(\BY^T\Be)$.\;
-			Normalize $\BYbar \leftarrow \diag(\Bd)^{-1}\BY$.\;
+			Calculate row sums $d = Y(Y^Te)$.\;
+			Normalize $\Ybar \leftarrow \diag(d)^{-1}Y$.\;
 			\vspace{3px}
-			Compute QR decomposition of $\BY = \BQ\BR$.\;
-			Form $\BX = \BYbar\BR^T$.\;
-			Select $\BS$ using column pivoted QR on $\BX^T$.\;
+			Compute QR decomposition of $Y = QR$.\;
+			Form $X = \Ybar R^T$.\;
+			Select $S$ using column pivoted QR on $X^T$.\;
 			\vspace{2px}
-			Solve $n$ simplex-constrained least square problems
-			to minimize $\|\BX-\BBreve\BX_{\BS\ast}\|_F$.\;
+			Solve $n$ simplex\hyp{}constrained least square problems to minimize $
+			\norm{X-\Bbreve X_{S\ast}}_F$.\;
 			\vspace{2px}
-			Recover $\BB$ from $\BBreve$ using Bayes' rule.\;
-			Recover $\BA = \BB_{\BS \ast}^{-1}\BY_{\BS\ast}\BY_{\BS\ast}^T\BB_{\BS 
-			\ast}^{-1}$.
+			Recover $B$ from $\Bbreve$ using Bayes' rule.\;
+			Recover $A = B_{S\ast}^{-1}Y_{S\ast}Y_{S\ast}^TB_{S\ast}^{-1}$.
 		}
 		\caption{Low-rank AW (LAW)}
 	  \label{alg:law}      
@@ -39,116 +38,115 @@ small negative entries in $\BC$, as in the case with ENN.
 		\SetKwInput{KwInput}{Input}
 		\SetKwInput{KwOutput}{Output}
 		\DontPrintSemicolon
-    \KwInput{Raw object-example $\BH \In \BBR^{N \Times M}$}
-		\KwOutput{Anchor objects $\BS \Eq \{s_1, ..., s_K\}$\\ 
-		\hspace{36px} Latent clusters $\BB \In \BBR^{N \Times K}$\\
-		\hspace{36px} Cluster correlations $\BA \In \BBR^{K \Times K}$}
+    \KwInput{Raw object-example $H \in \BBR^{N \Times M}$}
+		\KwOutput{Anchor objects $S \Eq \{s_1, ..., s_K\}$\\ 
+		\hspace{36px} Latent clusters $B \in \BBR^{N \Times K}$\\
+		\hspace{36px} Cluster correlations $A \in \BBR^{K \Times K}$}
 		\Begin{
-		  Get $\BHhat, \BHhat_{diag}$ from $\BH$ by \eqref{eqn:unbiased}.\;
+		  Get $\Hhat, \Hhat_{\diag}$ from $H$ by \cref{eqn:unbiased}.\;
 		  \vspace{1px}
-			$\BC_{op}: \Bx\rightarrow\BHhat (\BHhat^T\Bx) - \BHdiag\Bx$\;
+			$C^{op}: x\rightarrow\Hhat (\Hhat^Tx) - \Hdiag x$\;
 			\vspace{3px}
-			$(\BU,\BLambda_K) \leftarrow$ Randomized-Eig($\BC_{op}, K$)\;
+			$(U,\Lambda_K) \leftarrow$ Randomized\hyp{}Eig($C^{op}, K$)\;
 			\vspace{3px}
-			Initialize ENN with $\BU, \BLambda_K$.\;
+			Initialize ENN with $U, \Lambda_K$.\;
 			\vspace{3px}
-			$\BY\leftarrow$ ENN-rectification\;
+			$Y\leftarrow$ ENN\hyp{}rectification\;
 			\vspace{3px}
-			$(\BS, \BB, \BA) \gets $LAW($\BY)\;\;$ (Algorithm \ref{alg:law})
+			$(S, B, A) \gets $LAW($Y)\;\;$ (\cref{alg:law})
 		}
 		\caption{Low-rank JSMF (LR-JSMF)}
 	\label{alg:lr-jsmf}        
 	\end{algorithm}
 \end{figure}
 
-The first step is to $L_1$\hyp{}normalize the rows of $\BC$. Given $\BC \Geq 0$,
+The first step is to $L_1$\hyp{}normalize the rows of $C$. Given $C \geq 0$, 
 the $L_1$\hyp{}norm of each row is simply the sum of all its entries, so we can
-calculate the row norms by $\Bd \Eq \BY(\BY^T\Be)$. To obtain the normalized
-$\BC$, we simply scale the rows of $\BY$, and \smash{$\BCbar \Eq (\diag(\Bd)^
-{-1}\BY)\BY^T \Eq \BYbar\BY^T$}. These steps cost $\calO(NK)$.
+calculate the row norms by $d \Eq Y(Y^Te)$. To obtain the normalized $C$, we
+simply scale the rows of $Y$, and $\Cbar \Eq (\diag(d)^{-1}Y)Y^T \Eq \Ybar 
+Y^T$. These steps cost $\calO(NK)$.
 
 Next, we need to apply column pivoted QR to \smash{$\BCbar^T$} in order to
-identify the pivots as our anchor objects $\BS$. By taking the QR decomposition
-$\BY \Eq \BQ\BR$, $\BCbar^T$ can be further transformed into $\BQ\BR\BYbar^T$.
-Notice that $\BCbar^T$ is an orthogonal embedding of $\BX^T = \BR\BYbar^T$ onto
-a higher-dimensional space, which preserves the column $L_2$-norms. Lemma 
-\ref{lem:qrequiv} shows that column pivoted QR on $\BCbar^T$ and on
-$\BR\BYbar^T$ are equivalent, which allows us to lower the computation cost from
-$\calO(N^2K)$ to $\calO(NK^2)$.
+identify the pivots as our anchor objects $S$. By taking the QR decomposition
+$Y \Eq QR$, $Cbar^T$ can be further transformed into $QR\Ybar^T$. Notice that
+$\Cbar^T$ is an orthogonal embedding of $X^T = R\Ybar^T$ onto a
+higher\hyp{}dimensional space, which preserves the column $L_2$\hyp{}norms.
+\cref{lem:qrequiv} shows that column pivoted QR on $\Cbar^T$ and on $R\Ybar^T$
+are equivalent, which allows us to lower the computation cost from $\calO(N^2K)$
+to $\calO(NK^2)$.
 
 \begin{lemma}\label{lem:qrequiv}
-  Let $\BS$ be the set of pivots that have been selected by column pivoted QR on
-  $\BCbar^T = \BQ\BX^T$. Given the QR decomposition, $\BXbar_{\BS\ast}^T = \BP
-  \BT$, then $\BCbar_{\BS\ast}^T = (\BQ\BP)\BT$ is the corresponding QR
-  decomposition for the columns of $\BCbar$. For any remaining row $i\in 
-  [N]\setminus S$,
+  Let $S$ be the set of pivots that have been selected by column pivoted QR on
+  $\Cbar^T = QX^T$. Given the QR decomposition, $\Xbar_{S\ast}^T = PT$, then
+  $\Cbar_{S\ast}^T = (QP)T$ is the corresponding QR decomposition for the
+  columns of $\Cbar$. For any remaining row $i\in [N]\setminus S$,
   \begin{equation}
-  	\|(\BI-\BP\BP^T)\BXbar_{i\ast}^T\|_2 = \|(\BI-(\BQ\BP)(\BQ\BP)^T)\BCbar_
-  	{i\ast}^T\|_2
+  	\norm{(I-PP^T)\Xbar_{i\ast}^T}_2 = \norm{\left(I-(QP)(QP)^T\right)\Cbar_
+  	{i\ast}^T}_2\,.
   \end{equation}
-  Therefore, the next column pivot is identical for $\BCbar^T$ and $\BXbar^T$. 
-  By induction, column pivoted QR on $\BCbar^T$ and $\BXbar^T$ return the same
+  Therefore, the next column pivot is identical for $\Cbar^T$ and $\Xbar^T$. 
+  By induction, column pivoted QR on $\Cbar^T$ and $\Xbar^T$ return the same
   pivots.
 \end{lemma}
 \begingroup
 \allowdisplaybreaks
 \begin{proof}
-  Because both $\BQ$ and $\BP$ have orthonormal columns,
+  Because both $Q$ and $P$ have orthonormal columns,
   \begin{equation}
-    (\BQ\BP)^T(\BQ\BP) = \BP^T(\BQ^T\BQ)\BP = \BP^T\BP = \BI
+    (QP)^T(QP) = P^T(Q^TQ)P = P^TP = I\,.
   \end{equation}
-  Thus, $\BQ\BP$ and $\BT$ forms the QR decomposition of $\BCbar_{\BS\ast}^T$.
-  The residual of a remaining column $i\in[N]\setminus S$ is $(\BI-(\BQ\BP)(\BQ
-  \BP)^T) \BCbar_{i\ast}^T$ and $(\BI-\BP\BP^T)\BXbar_{i\ast}^T$ for $\BCbar^T$
-  and $\BXbar^T$, respectively. Simplify the former gives us
+  Thus, $QP$ and $T$ forms the QR decomposition of $\Cbar_{S\ast}^T$. The
+  residual of a remaining column $i\in[N]\setminus S$ is $\left(I-(QP)
+  (QP)^T\right) \Cbar_{i\ast}^T$ and $(I-PP^T)\Xbar_{i\ast}^T$ for $\Cbar^T$ and
+  $\BXbar^T$, respectively. Simplify the former gives us
   \begin{align*}
-    &(\BI-(\BQ\BP)(\BQ\BP)^T)\BCbar_{i\ast}^T \\
-    ={} & (\BI-(\BQ\BP)(\BQ\BP)^T)\BQ\BXbar_{i\ast}^T \\
-    ={} & \BQ\BXbar_{i\ast}^T - \BQ\BP\BP^T\BQ^T\BQ\BXbar_{i\ast}^T\\
-    ={} & \BQ(\BI-\BP\BP^T)\BXbar_{i\ast}^T
+    &\left(I-(QP)(QP)^T\right)\Cbar_{i\ast}^T \\
+    ={} & \left(I-(QP)(QP)^T\right)Q\Xbar_{i\ast}^T \\
+    ={} & Q\Xbar_{i\ast}^T - QPP^TQ^TQ\Xbar_{i\ast}^T\\
+    ={} & Q(I-PP^T)\Xbar_{i\ast}^T
   \end{align*}
   Finally,
   \begin{equation}\label{eqn:normpres}
-    \|(\BI-(\BQ\BP)(\BQ\BP)^T)\BCbar_{i\ast}^T\|_2^2 = \BXbar_{i\ast}
-    (\BI-\BP\BP^T) \BQ^T\BQ(I-\BP\BP^T)\BXbar_{i\ast}^T = \|
-    (\BI-\BP\BP^T)\BXbar_{i\ast}^T\|_2^2
+    \norm{\left(I-(QP)(QP)^T\right)\Cbar_{i\ast}^T}_2^2 = \Xbar_{i\ast} 
+    (I-PP^T)Q^TQ (I-PP^T)\Xbar_{i\ast}^T = \norm{(I-PP^T)\Xbar_{i\ast}^T}_2^2
   \end{equation}
   Because the next pivot is selected as the column whose residual has the
   largest $L_2$\hyp{}norm, Eq. \ref{eqn:normpres} indicates that the same pivot
-  will be selected for $\BCbar^T$ and $\BXbar^T$. Inductively, the anchors $\BS$
+  will be selected for $\Cbar^T$ and $\Xbar^T$. Inductively, the anchors $S$
   recovered by column pivoted QR on those matrices are equivalent.
 \end{proof}
 \endgroup
 
-Following the recovery of $\BS$, AW solves $N$ independent simplex-constrained
-least square problems $\|\BCbar_{i\ast} - \BBreve_{i\ast}^T\BCbar_
-{\BS\ast}\|_2$. Again we can leverage the $L_2$-norm preserving property, 
+Following the recovery of $S$, AW solves $N$ independent 
+simplex\hyp{}constrained least square problems $\norm{\Cbar_{i\ast} - \Bbreve_
+{i\ast}^T\Cbar_{S\ast}}_2$. Again we can leverage the $L_2$\hyp{}norm preserving
+property, 
 \begin{equation}\label{eqn:lrls}
-  \|\BCbar_{i\ast} - \BBreve_{i\ast}^T\BCbar_{\BS\ast}\|_2 = \|\BX_{i\ast}\BQ^T
-  - \BBreve_{i\ast}^T\BX_{\BS\ast}\BQ^T\|_2 = \|\BX_{i\ast} - \BBreve_{i\ast}^T 
-  \BX_{\BS\ast}\|_2
+  \norm{\Cbar_{i\ast} - \Bbreve_{i\ast}^T\Cbar_{S\ast}}_2 = \norm{X_{i\ast}Q^T
+  - \Bbreve_{i\ast}^TX_{S\ast}Q^T}_2 = \norm{X_{i\ast} - \Bbreve_{i\ast}^T X_
+  {S\ast}}_2
 \end{equation}
 and reduce the dimension of the least\hyp{}square problems from $N$ to $K$,
 thereby the complexity from $\calO(N^2K)$ to $\calO(NK^2)$. The remaining part
 of the algorithm follows exactly as AW.
 
-\paragraph{Low\hyp{}rank Joint Stochastic Matrix Factorization (LR-JSMF)} 
+\paragraph{Low\hyp{}rank Joint Stochastic Matrix Factorization (LR\hyp{}JSMF)} 
 We complete our scalable framework of processing co\hyp{}occurrence statistic by
-introducing a direct initialization method from the raw object-example data for
-ENN. This allows us to avoid creating and storing $\BC$, which is a burden of
-memory when $N$ becomes sufficiently large. In Algorithm \ref{alg:enn}, $\BC$
-only appears in the initial truncated eigen\hyp{}decomposition, after which we
-maintain the compressed operator $\BC_{op}$ independent of it. On the other
-hand, we just need the matrix\hyp{}vector multiplication by $\BC$ for the
-iterative methods in initialization. Using the generative formula in Eq. 
-\ref{eqn:unbiased}, we are able to implicitly apply $\BC$ to vectors as an
-outer\hyp{}product plus diagonal operator, in terms of $\BH$, at $\calO(NMK)$
-computation cost. To further reduce the number of times the operator is applied,
-we adopt the one-pass randomized eigen\hyp{}decomposition by Halko et al. 
-\cite{halko2011finding}. This technique enables us to initialize with a single
-pass over the dataset, without concurrently storing the entire $\BH$ in memory.
-A limitation is when the number of clusters is large and the gap between the
-$K\mathrm{\hyp{}th}$ eigenvalue and the ones below is small, we will have to
-incorporate a few power iterations for refinement, as suggested by the original
-paper. This will result in a multi\hyp{}pass method, but still far more
-efficient on large object size and parallelization-friendly.
+introducing a direct initialization method from the raw object\hyp{}example data
+for ENN. This allows us to avoid creating and storing $C$, which is a burden
+of memory when $N$ becomes sufficiently large. In \cref{alg:enn}, $C$ only
+appears in the initial truncated eigendecomposition, after which we maintain the
+compressed operator $C^{op}$ independent of it. On the other hand, we just need
+the matrix\hyp{}vector\hyp{}multiplication by $C$ for the iterative methods in
+initialization. Using the generative formula in \cref{eqn:unbiased}, we are able
+to implicitly apply $C$ to vectors as an outer\hyp{}product plus diagonal
+operator, in terms of $H$, at $\calO(NMK)$ computation cost. To further reduce
+the number of times the operator is applied, we adopt the one\hyp{}pass
+randomized eigendecomposition by \citet{halko2011finding}. This technique
+enables us to initialize with a single pass over the dataset, without
+concurrently storing the entire $H$ in memory. A limitation is when the number
+of clusters is large and the gap between the $K$\hyp{}th eigenvalue and the ones
+below is small, we will have to incorporate a few power iterations for
+refinement, as suggested by the original paper. This will result in a 
+multi\hyp{}pass method, but still far more efficient on large object size and
+parallelization\hyp{}friendly.

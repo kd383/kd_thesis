@@ -1,4 +1,4 @@
-Orbital pairs of the form $\{\varphi_{i}(\Br)\psi_{j}(\Br)\}_{i,j=1}^{N}$, where
+Orbital pairs of the form $\{\varphi_{i}(r)\psi_{j}(r)\}_{i,j=1}^{N}$, where
 $\varphi_{i}, \psi_{j}$ are single particle orbitals, appear ubiquitously in
 quantum chemistry. A few examples include the Fock exchange operator, the MP2
 amplitude, and the polarizability operator \cite{SzaboOstlund1989,Martin2004}.
@@ -23,49 +23,49 @@ the storage cost of the matrix to represent all orbital pairs on a grid is
 already $\calO(N_{e}^3)$, and the computational cost of compressing the orbital
 pairs is then typically $\calO(N_{e}^{4})$.
 
-Recently, Lu and Ying developed a new decomposition called the interpolative
-separable density fitting (ISDF) \cite{JCP_302_329_2015_ISDF}, which takes the
+Recently, \citet{JCP_302_329_2015_ISDF} developed a new decomposition called the
+\emph{interpolative separable density fitting} (ISDF) , which takes the
 following form
 \begin{equation}\label{eqn:isdfformat}
-  \varphi_{i}(\Br)  \psi_{j}(\Br)\approx \sum_{\mu=1}^{N_{\mu}}
-  \zeta_{\mu}(\Br) \left(\varphi_{i}(\Brhat_\mu)\psi_{j}(\Brhat_\mu)\right).
+  \varphi_{i}(r)  \psi_{j}(r)\approx \sum_{\mu=1}^{N_{\mu}}\zeta_{\mu}(r) \left(
+  \varphi_{i}(\rhat_\mu)\psi_{j}(\rhat_\mu)\right)\,.
 \end{equation}
-For a given $\Br$, if we view $[\psi_{i}(\Br)\psi_{j}(\Br)]$ as a row
-of the matrix $\{\psi_{i}\psi_{j}\}$ discretized on a dense grid, then the ISDF
-decomposition states that all such matrix rows can be approximately expanded
-using a linear combination of matrix rows with respect to a selected set of 
-\textit{interpolation points} $\{\Brhat_\mu\}_{\mu=1}^{N_{\mu}}$.  The
+For a given $r$, if we view $[\psi_{i}(r)\psi_{j}(r)]$ as a row of the matrix $
+\{\psi_{i}\psi_{j}\}$ discretized on a dense grid, then the ISDF decomposition
+states that all such matrix rows can be approximately expanded using a linear
+combination of matrix rows with respect to a selected set of 
+\textit{interpolation points} $\{\rhat_\mu\}_{\mu=1}^{N_{\mu}}$. The
 coefficients of such linear combination, or \textit{interpolating vectors}, are
-denoted by $\{\Bzeta_{\mu}(\Br)\}_{\mu=1}^{N_{\mu}}$. Here $N_{\mu}$ can be
+denoted by $\{\Bzeta_{\mu}(r)\}_{\mu=1}^{N_{\mu}}$. Here $N_{\mu}$ can be
 interpreted as the numerical rank of the ISDF decomposition. Compared to the
 standard density fitting method, the three-tensor $\left\{\varphi_{i}
-(\Brhat_\mu)\psi_{j}(\Brhat_\mu)\right\}$ with three indices $i, j, \mu$ takes a
+(\rhat_\mu)\psi_{j}(\rhat_\mu)\right\}$ with three indices $i, j, \mu$ takes a
 separable form. This reduces the storage cost of the decomposed tensor from
 $\calO(N_{e}^3)$ to $\calO(N_{e}^2)$, and the computational cost from $\calO(N_
 {e}^{4})$ to $\calO(N_{e}^3)$. Note that if the interpolation points $
-\{\Brhat_\mu\}_{\mu=1}^{N_{\mu}}$ are chosen to be on a uniform grid, then the ISDF decomposition reduces to the pseudospectral decomposition, where $N_
+\{\rhat_\mu\}_{\mu=1}^{N_{\mu}}$ are chosen to be on a uniform grid, then the
+ISDF decomposition reduces to the pseudospectral decomposition, where $N_
 {\mu}\Sim\calO(N_{e})$ but with a large preconstant. For instance, the
 pseudospectral decomposition can be highly inefficient for molecular systems,
 where the grid points in the vacuum contribute nearly negligibly to the orbital
 pairs. On the other hand, by selecting the interpolation points carefully, e.g.
-through a randomized QR factorization with column pivoting (QRCP) procedure 
-\cite{GolubVan2013}, the number of interpolation points can be significantly
-reduced. The QRCP based ISDF decomposition has been applied to accelerate a
-number of applications, at least in the context of pseudopotential approximation
-where the wavefunctions are smooth, including two-electron integral computation 
-\cite{JCP_302_329_2015_ISDF}, correlation energy in the random phase
-approximation \cite{LuThicke2017}, density functional perturbation theory 
-\cite{LinXuYing2017}, and hybrid density functional calculations 
+through a randomized \emph{QR factorization with column pivoting} (QRCP)
+procedure \cite{GolubVan2013}, the number of interpolation points can be
+significantly reduced. The QRCP based ISDF decomposition has been applied to
+accelerate a number of applications, at least in the context of pseudopotential
+approximation where the wavefunctions are smooth, including two\hyp{}electron
+integral computation \cite{JCP_302_329_2015_ISDF}, correlation energy in the
+random phase approximation \cite{LuThicke2017}, density functional perturbation
+theory \cite{LinXuYing2017}, and hybrid density functional calculations 
 \cite{JCTC_2017_ISDF}. For example, when iterative solvers are used for hybrid
 density functional calculations, the Fock exchange operator $V_{X}$ defined in
 terms of a set of orbitals $\{\varphi_i\}$ needs to be repeatedly applied to
 another set of Kohn-Sham orbitals $\{\varphi_j\}$
 \begin{equation}\label{eqn:applyVX}
-  \left(V_{X}[\{\varphi_{i}\}]\psi_{j}\right)(\Br) =
-  -\sum_{i=1}^{N_{e}} \varphi_{i}(\Br) \int K(\Br,\Br')
-  \varphi_{i}(\Br')\psi_{j}(\Br') d\Br'.
+  \left(V_{X}[\{\varphi_{i}\}]\psi_{j}\right)(r) = -\sum_{i=1}^{N_{e}} \varphi_
+  {i}(r) \int K(r,r')\varphi_{i}(r')\psi_{j}(r') dr'.
 \end{equation}
-where $K(\Br,\Br')$ is the kernel for the Coulomb or the screened Coulomb
+where $K(r, r')$ is the kernel for the Coulomb or the screened Coulomb
 operator.  The integration in Eq. \ref{eqn:applyVX} is often carried out by
 solving Poisson-like equations, using e.g. a fast Fourier transform (FFT)
 method, and the computational cost is $\calO(N_e^3)$ with a large preconstant.
@@ -78,15 +78,15 @@ interpolation vectors are determined simultaneously through randomized QRCP
 applied to $\{\psi_{i}(\Br)\psi_{j}(\Br)\}$ directly. We recently found that the
 randomized QRCP procedure has $\calO(N_{e}^3)$ complexity but with a relatively
 large preconstant, and may not be competitive enough when used repeatedly. In
-order to overcome such difficulty, we proposed a different approach in Ref.
-~\cite{JCTC_2017_ISDF} that determines the two parts separately and reduces the
-computational cost. We use the relatively expensive randomized QRCP procedure to
-find the interpolation points in advance, and only recompute the interpolation
-vectors whenever $\{\psi_{i}(\Br)\psi_{j}(\Br)\}$ has been updated using an
-efficient least squares procedure that exploits the separable nature of the
-matrix to be approximated. As a result, we can significantly accelerate hybrid
-functional calculations using the ISDF decomposition in all but the first SCF
-iteration.
+order to overcome such difficulty, we proposed a different approach in 
+Ref.~\cite{JCTC_2017_ISDF} that determines the two parts separately and reduces
+the computational cost. We use the relatively expensive randomized QRCP
+procedure to find the interpolation points in advance, and only recompute the
+interpolation vectors whenever $\{\psi_{i}(r)\psi_{j}(r)\}$ has been updated
+using an efficient least squares procedure that exploits the separable nature of
+the matrix to be approximated. As a result, we can significantly accelerate
+hybrid functional calculations using the ISDF decomposition in all but the first
+\emph{self consistent field} (SCF) iteration.
 
 In this work, we further remove the need of performing the QRCP decomposition
 completely and, hence, significantly reduce the computational cost. Note that an
@@ -97,16 +97,16 @@ more points when the electron density is high, and less or even zero points if
 the electron density is very low. (2) The interpolation points should not be very
 close to each other.  Otherwise, matrix rows represented by the interpolation
 points are nearly linearly dependent, and the matrix formed by the interpolation
-vectors will be highly ill-conditioned.  The QRCP procedure satisfies both (1)
-and (2) simultaneously, and thus is an effective way for selecting the
+vectors will be highly ill\hyp{}conditioned.  The QRCP procedure satisfies both 
+(1) and (2) simultaneously, and thus is an effective way for selecting the
 interpolation points.  Here we demonstrate that (1) and (2) can also be satisfied
 through a much simpler centroidal Voronoi tessellation (CVT) procedure applied
 to a weight vector such as the electron density.
 
 The Voronoi tessellation technique has been widely used in computer science
-\cite{aurenhammer1991voronoi}, and scientific and engineering applications such
-as image processing\cite{du2006centroidal}, pattern recognition 
-\cite{ogniewicz1995hierarchic}, and numerical integration 
+\cite{aurenhammer1991voronoi}, as well as scientific and engineering
+applications, e.g., image processing\cite{du2006centroidal}, pattern
+recognition \cite{ogniewicz1995hierarchic}, and numerical integration 
 \cite{becke1988multicenter}. The concept of Voronoi tessellation can be simply
 understood as follows. Given a discrete set of weighted points, the CVT
 procedure divides a domain  into a number of regions, each consisting of a
@@ -118,25 +118,27 @@ from each other by a finite distance due to the nearest neighbor principle, and
 hence satisfy the requirement (2). Although detailed analysis of the error
 stemming from such a choice of interpolation points is very difficult for
 general nonlinear functions, we find that the CVT procedure approximately
-minimizes the residual of the ISDF decomposition in Eq.~\ref{eqn:isdfformat}.
+minimizes the residual of the ISDF decomposition in \cref{eqn:isdfformat}.
 In practice, the CVT procedure only applies to one vector (the electron density)
 instead of $\calO(N_{e}^2)$ vectors and hence is very efficient.
 
-We apply the ISDF-CVT method to accelerate hybrid functional calculations in a
-planewave basis set. We perform such calculations for different systems with
-insulating (liquid water), semiconducting (bulk silicon), and metallic 
+We apply the ISDF\hyp{}CVT method to accelerate hybrid functional calculations
+in a planewave basis set. We perform such calculations for different systems
+with insulating (liquid water), semiconducting (bulk silicon), and metallic 
 (disordered silicon aluminum alloy) characters, as well as ab initio molecular
-dynamics (AIMD) simulations. We find that the ISDF-CVT method achieves similar
-accuracy to that obtained from the ISDF-QRCP method, with significantly improved
-efficiency. For instance, for a bulk silicon system containing $1000$ silicon
-atoms computed on $2000$ computational cores with kinetic energy cutoff being
-$10\Ha$, the QRCP procedure finds the interpolation points with $38.1\Sec$,
-while the CVT procedure only takes $0.7\Sec$. Since the solution of the CVT
-procedure is continuous with respect to changes in the electron density, we also
-find that the CVT procedure produces a smoother potential energy surface than
-that by the QRCP procedure in the context of AIMD simulations.
+dynamics (AIMD) simulations. We find that the ISDF\hyp{}CVT method achieves
+similar accuracy to that obtained from the ISDF\hyp{}QRCP method, with
+significantly improved efficiency. For instance, for a bulk silicon system
+containing $1000$ silicon atoms computed on $2000$ computational cores with
+kinetic energy cutoff being $10\Ha$, the QRCP procedure finds the interpolation
+points with $38.1\Sec$, while the CVT procedure only takes $0.7\Sec$. Since the
+solution of the CVT procedure is continuous with respect to changes in the
+electron density, we also find that the CVT procedure produces a smoother
+potential energy surface than that by the QRCP procedure in the context of AIMD
+simulations.
 
-The remainder of the paper is organized as follows. We briefly introduce the
-ISDF decomposition in \S \ref{cvtsec:bac}. In \S \ref{cvtsec:met} we describe
-the ISDF-CVT procedure and its implementation for hybrid functional
-calculations. We present numerical results of the ISDF-CVT method in \S \ref{cvtsec:num}, and conclude in \S \ref{cvtsec:con}.
+The remainder of the chapter is organized as follows. We briefly introduce the
+ISDF decomposition in \cref{cvtsec:bac}. In \cref{cvtsec:met} we describe
+the ISDF\hyp{}CVT procedure and its implementation for hybrid functional
+calculations. We present numerical results of the ISDF\hyp{}CVT method in 
+\cref{cvtsec:num}, and conclude in \cref{cvtsec:con}.
