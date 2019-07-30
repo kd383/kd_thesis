@@ -1,8 +1,7 @@
 \section{Data as Matrices}\label{pre:dam}
 
-Matrices are ubiquitous in data\hyp{}related fields, from the 
-long\hyp{}established computer science and statistics, to the rapidly growing
-machine learning and data science. From different perspectives, a matrix can
+Matrices are ubiquitous in data\hyp{}related fields, such as computer science,
+statistics, and machine learning. From different perspectives, a matrix can
 represent a variety of objects:
 \begin{itemize}
 	\item A simple and compact way of storing information. For example, each
@@ -14,11 +13,11 @@ represent a variety of objects:
 	u)\mapsto u^TAv$.
 \end{itemize}
 Most importantly, these representations are not incompatible with each other,
-and it is the capacity of being all of them at once that makes matrices such
-a powerful tool in applications. For instance, an adjacency matrix $A\in\BBR^
-{N\Times N}$ can describe an unweighted graph where $A_{ij} = 1$ if node $i$
-and $j$ are connected by an edge, and $0$ otherwise. Each row of $A$ can be
-viewed as the connectivity features for the corresponding node. Alternatively,
+and it is the capacity for multiple simultaneous interpretations that makes
+matrices such a powerful tool in applications. For instance, an adjacency matrix
+$A\in\BBR^{N\Times N}$ can describe an unweighted graph where $A_{ij} = 1$ if
+node $i$ and $j$ are connected by an edge, and $0$ otherwise. Each row of $A$
+can be viewed as the connectivity for the corresponding node. Alternatively,
 applying $A$ to a vector standing for the initial condition of a diffusion
 process captures the dynamics on this graph. Finally, the bilinear map of $A$ on
 $\calV = \calU = \{0, 1\}^N$ measures the number of edges from one set of nodes
@@ -26,9 +25,9 @@ to the other and thus can be used in graph partitioning tasks.
 
 Therefore, it is inadequate to categorize data matrices by their linear
 algebraic roles. Instead, we introduce the matrices encountered in this
-dissertation by the properties of datasets they encapsulate. Regardless the type
-of data matrices we are dealing with, the most critical task is identifying the
-intrinsic numerical properties attached to it, so that we can adapt our
+dissertation by the properties of datasets they encapsulate. Regardless of the
+type of data matrices we are dealing with, the most critical task is identifying
+the intrinsic numerical properties attached to it, so that we can adapt our
 algorithms to specific applications.
 
 \paragraph{Matrices for Feature}
@@ -37,17 +36,17 @@ A dataset with finite number of features can be associated with a vector space,
 i.e., feature space. An object\hyp{}feature matrix $A\in\BBR^{M\Times N}$
 compactly encodes all of its information by treating $N$ data points as column
 vectors, each with $M$ features. In addition, many algorithms involve linear
-algebraic operations on data, and such representation naturally facilitates
-their computation as well as massive parallelization. For example, data
-compression and dimensionality reduction techniques, such as frequency sampling
-and principal component analysis, are usually implemented as low\hyp{}rank
-decompositions on data matrices. Neural networks can be viewed as a sequence of
-linear transformations and element\hyp{}wise operations, which rely on the
-matrix computation for efficient parallelization. As a result, matrices together
-with higher order variations are easily the most popular mathematical objects
-for keeping track of data during computation.
+algebraic operations on data, and such a representation naturally facilitates
+their computation. For example, data compression and dimensionality reduction
+techniques, such as frequency sampling and principal component analysis, are
+usually implemented as low\hyp{}rank decompositions on data matrices. Neural
+networks can be viewed as a sequence of linear transformations and element
+\hyp{}wise operations, which rely on the matrix computation for efficient
+parallelization. As a result, matrices together with higher order variations are
+easily the most popular mathematical objects for keeping track of data during
+computation.
 
-In this dissertation, a majority of matrices are this type even though they are
+In this dissertation, a majority of matrices are this type, even though they are
 not always the focus of study. Every experiment of Gaussian processes regression
 uses object\hyp{}feature matrices for both input and output. In topic modeling,
 the topic\hyp{}word matrix is a latent matrix of this type, and plays an crucial
@@ -73,15 +72,15 @@ guarantee, and algorithmic robustness.
 
 The last type of data matrices is generally associated with differential
 operators, whether in a continuous setting or the corresponding discrete
-analogs. These matrices appear in \cref{ch6} both explicitly as discretization
-of Laplace operator, and implicitly as integral operators---e.g., the 
-Hatree\hyp{}Fock operator. Here, we focus on exploiting structural information
-to compress these matrices and gain computational efficiency. On the other hand,
-in \cref{ch3} the graph Laplacian and the random walk matrix describe the
-dynamics on the original graph, which we use to reveal structural properties.
-There is no doubt a deep connection between the dynamics on an underlying object
-and its structures. In general, we can leverage our knowledge on one to gain
-valuable insights on the other.
+analogs. These matrices appear in \cref{ch6} both explicitly as
+the discretization of Laplace operator, and implicitly as integral
+operators---e.g., the Hatree\hyp{}Fock operator. Here, we focus on exploiting
+structural information to compress these matrices and gain computational
+efficiency. On the other hand, in \cref{ch3} the graph Laplacian and the random
+walk matrix describe the dynamics on the original graph, which we use to reveal
+structural properties. There is no doubt a deep connection between the dynamics
+on an underlying object and its structures. In general, we can leverage our
+knowledge on one to gain valuable insights on the other.
 
 \section{Functions of Matrices}\label{pre:fom}
 
@@ -105,10 +104,9 @@ tells us
 	(\lambda_N))V\,.
 \end{equation}
 
-Historically, there has been long\hyp{}lasting interest in numerical methods for
-computing functions of matrices because of its importance in many applications,
-such as differential equations, Markov models, and network science. The
-straightforward approach in \cref{eqn:smt} takes an $\calO(N^3)$
+Numerical methods for computing functions of matrices are important in many
+applications, such as differential equations, Markov models, and network
+science. The straightforward approach in \cref{eqn:smt} takes an $\calO(N^3)$
 eigendecomposition, which is not always feasible. Many tailored algorithms have
 been developed for a few specific but prevalent functions, like the matrix
 square root and matrix exponential \cite[Chapter 6 \& 10]{higham2008functions}.
@@ -138,8 +136,8 @@ recurrence relation
 \end{equation}
 and avoid storing all $T_m(A)$ at once. When we are only interested in applying
 $f(A)$ to a vector $v$, we can further reduce the computation to just
-calculating $T_m(A)v$ for $m = 1,\cdots, M$, and exploit fast MVM with $A$ if
-possible.
+calculating $T_m(A)v$ for $m = 1,\cdots, M$, and exploit fast matrix\hyp{}vector
+products with $A$ if possible.
 
 The second method is Gauss quadrature and Lanczos (GQL) algorithm proposed by 
 \citet{golub1997matrices}. It is based on the Lanczos algorithm, which produces
@@ -159,10 +157,12 @@ Chebyshev expansion method has strong theoretical guarantees on convergence rate
 for $f$ with some degree of smoothness over the spectrum of $A$. For irregular
 $f$, it may take extremely large number of moments to resolve possible
 discontinuities, thus suffering in either efficiency or approximation quality.
-On the other hand, GQL works well only for matrices with a few distinct
-eigenvalues, which allows the Lanczos algorithm to quickly converge. Therefore,
-it is crucial for us to determine the numerical characteristics of the matrices
-we are interested in, and choose the appropriate method for each application.
+On the other hand, GQL is well suited for matrices with a few distinct
+eigenvalues, which allows the Lanczos algorithm to converge quickly.
+However, it requires extra computation to ensure numerical stability in floating
+point arithmetics. Therefore, it is crucial for us to determine the numerical
+characteristics of the matrices we are interested in, and choose the appropriate
+method for each application.
 
 \section{Stochastic Estimation}\label{pre:ste}
 
@@ -187,8 +187,8 @@ Choosing $N_z$ independent probe vectors $Z_j$, we obtain the unbiased estimator
 \begin{equation}\label{eqn:trace_est}
 	\tr(A) = \BBE[z^TAz] \approx \frac{1}{N_z}\sum_{j=1}^{N_z}Z_j^TAZ_j\,.
 \end{equation}
-Hutchinson also identified sampling $z_i$ from the  Bernoulli distribution leads
-to minimal variance on the estimated trace.
+Hutchinson also showed that sampling $Z_i$ from the Bernoulli distribution
+leads to minimal variance on the estimated trace.
 
 Since then, \citet{avron2011randomized} reviewed many possible choices of probes
 for \cref{eq:probe_trace,eq:probe_diag}; another common choice is vectors with
@@ -229,10 +229,10 @@ reasonable results for some applications \cite[Theorem~28.33]
 {arumugam2016handbook}.
 
 Finally, we also attempted to use control variate to improve the stochastic
-estimation. In \cref{ch4} where the goal is to estimate the predictive variance,
-we take the more accurate results from pivoted Cholesky approximation on a few
-data points as control variate. Despite little reduction in variance, we
-are able to obtain an unbiased estimator.
+estimation. In \cref{ch4}, where the goal is to estimate the predictive
+variance, we take the more accurate results from pivoted Cholesky approximation
+on a few data points as a control variate. Despite little reduction in variance,
+we are able to obtain an unbiased estimator.
 
 \section{Interpretable Low\hyp{}Rank Approximations}\label{pre:lra}
 
@@ -244,17 +244,17 @@ $H\in\BBR^{k\times N}$:
 A = WH\,.
 \end{equation}
 Hence, we are able to efficiently store $A$ and multiply it with a vector in
-$\calO(N)$ rather than $\calO(N^2)$. Furthermore, the columns of matrix $W$
+$\calO(Nk)$ rather than $\calO(N^2)$. Furthermore, the columns of matrix $W$
 provide us useful insight about the data, since they form a basis that span the
 original columns of $A$. Low\hyp{}rank approximation is certainly one of the
-most well\hyp{}studied problems in linear algebra; and it is becoming increasing
-popular with the recent development in data science and machine learning. 
-High\hyp{}dimensional data matrices encountered in these fields commonly have a
-low numerical rank. Correspondingly, researchers have proposed low\hyp{}rank
-models for a wide variety of applications, such as principal component analysis,
-natural language processing, and recommender system. \citet{udell2019big}
-formalized this notion by showing a nice latent variable model produces data
-that can be well approximated by low\hyp{}rank matrices.
+most well\hyp{}studied problems in linear algebra; and it is widely used in data
+science and machine learning. High\hyp{}dimensional data matrices encountered in
+these fields commonly have a low numerical rank. Correspondingly, researchers
+have proposed low\hyp{}rank models for a wide variety of applications, such as
+principal component analysis, natural language processing, and recommender
+system. \citet{udell2019big} formalized this notion by showing a nice latent
+variable model produces data that can be well approximated by low\hyp{}rank
+matrices.
 
 Among the extensive literature on computing and exploiting low\hyp{}rank
 structures, there is a growing interest in interpretability. Previously, 
@@ -274,19 +274,19 @@ One attractive approach towards interpretable low\hyp{}rank approximations
 enforces $W$ to consist of columns from $A$. This allows us to describe all data
 points in terms of a small subset, maintaining the fundamental characteristics.
 The CUR matrix decomposition, a well\hyp{}known example of this type, is often
-preferred over singular valued decomposition in certain applications for its
-efficiency and interpretability. The biggest challenge here is to select a good
-subset of data points to obtain an accurate representation. The column subset
-selection problem is also a heavily discussed topic in numerical linear algebra
-\cite{boutsidis2009improved,deshpande2010efficient}. One of the most popular
-building block for solving it is QR factorization with column pivoting (QRCP).
-The column pivoting procedure gives QR factorization the rank\hyp{}revealing
-property. Combined with randomized sampling techniques, QRCP is able to
-effectively select columns that leads to near\hyp{}optimal low\hyp{}rank
-approximations. Both \cref{ch5,ch6} tackle the column subset selection problem,
-but from different perspectives. \cref{ch5} develops a scalable 
-pre\hyp{}processing framework to overcome the robustness issue for QRCP on a
-noisy dataset. \cref{ch6} exploits the physical attributes in the system to
-replace pivots from QRCP with centroids from the weighted K\hyp{}means
+preferred over singular value decomposition in certain applications because of
+its efficiency and interpretability. The biggest challenge here is to select a
+good subset of data points to obtain an accurate representation. The column
+subset selection problem is also a heavily discussed topic in numerical linear
+algebra \cite{boutsidis2009improved,deshpande2010efficient}. One of the most
+popular building block for solving it is QR factorization with column pivoting 
+(QRCP). The column pivoting procedure generally gives QR factorization the 
+rank\hyp{}revealing property. Combined with randomized sampling techniques, QRCP
+is able to effectively select columns that lead to near\hyp{}optimal 
+low\hyp{}rank approximations. Both \cref{ch5,ch6} tackle the column subset
+selection problem, but from different perspectives. \cref{ch5} develops a
+scalable pre\hyp{}processing framework to overcome the robustness issue for
+QRCP on a noisy dataset. \cref{ch6} exploits the physical attributes in the
+system to replace pivots from QRCP with centroids from the weighted K\hyp{}means
 algorithm. The resulting decomposition is much more efficient without any loss
 in accuracy.

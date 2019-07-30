@@ -11,26 +11,25 @@ Object\hyp{}feature matrices are the most common type; second\hyp{}order models,
 such as co-occurrence matrices and kernel matrices, capture the relationship
 between pairs of objects; Laplacian matrices and other linear operators describe
 dynamics on objects. In most instances, the matrices grow in size with the
-datasets, thus manipulating them becomes an inevitable challenge. Numerical
+datasets; thus, manipulating them becomes an inevitable challenge. Numerical
 linear algebra (NLA), the study of matrix\hyp{}based numerical methods,
 promptly becomes the driving force behind a lot of these applications.
 
 Similarly, this ongoing trend of big data has led NLA into new and exciting
-directions. Traditionally, NLA has focused on deterministic, 
-factorization\hyp{}based methods. While these methods usually have strong
-theoretical guarantees and highly optimized implementations, emerging problems
-have far exceeded the scale they are designed for, even with present\hyp{}day
-computational power. As a result, a great number of novel algorithms centered
-around scalability have been developed in response to this increasing demand.
-Randomized methods is one particular approach that brings efficiency through
-introducing stochasticity. Randomized NLA aims at building fast algorithms that
-return sufficiently good approximation to solutions. Both ``fast'' and ``good''
-are measured relatively depending on the underlying problem, but the results are
-usually supported by matrix perturbation theory and probability theory. Even
-though scalability is the foremost objective, randomized NLA also designs
-algorithms around other criteria, e.g., interpretability, robustness. 
-\citet{drineas2016randnla} provides a great overview of the recent development
-in randomized NLA.
+directions. While deterministic, factorization\hyp{}based methods usually have
+strong theoretical guarantees and highly optimized implementations, emerging
+problems have far exceeded the scale they are designed for, even with 
+present\hyp{}day computational power. As a result, a great number of novel
+algorithms centered around scalability have been developed in response to this
+increasing demand. Randomized methods provide one particular approach that
+brings efficiency through introducing stochasticity. Randomized NLA aims at
+building fast algorithms that return sufficiently good approximation to
+solutions. Both ``fast'' and ``good'' are measured relatively depending on the
+underlying problem, but the results are usually supported by matrix perturbation
+theory and probability theory. Even though scalability is the foremost
+objective, randomized NLA also designs algorithms around other criteria, e.g.,
+interpretability, robustness. \citet{drineas2016randnla} provides a great
+overview of the recent development in randomized NLA.
 
 This dissertation applies randomized NLA to large-scale data matrix in two
 settings:
@@ -86,7 +85,7 @@ of latent space. It allows us to simultaneously compress and rectify the
 co\hyp{}occurrence statistics, then learn latent variables directly from the
 compressed form without losing visible precision. We verify that our
 methods perform comparably to previous approaches on both textual and
-non\hyp{}textual data.
+non\hyp{}textual data. The work is in submission.
 
 \cref{ch6} describes how to use centroid Voronoi tessellation to accelerate
 electronic structure calculation. The recently developed interpolative separable
