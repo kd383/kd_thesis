@@ -18,7 +18,7 @@ matrices such a powerful tool in applications. For instance, an adjacency matrix
 $A\in\BBR^{N\Times N}$ can describe an unweighted graph where $A_{ij} = 1$ if
 node $i$ and $j$ are connected by an edge, and $0$ otherwise. Each row of $A$
 can be viewed as the connectivity for the corresponding node. Alternatively,
-applying $A$ to a vector standing for the initial condition of a diffusion
+applying $A$ to a vector standing for the initial condition of a path counting
 process captures the dynamics on this graph. Finally, the bilinear map of $A$ on
 $\calV = \calU = \{0, 1\}^N$ measures the number of edges from one set of nodes
 to the other and thus can be used in graph partitioning tasks.
@@ -30,14 +30,12 @@ type of data matrices we are dealing with, the most critical task is identifying
 the intrinsic numerical properties attached to it, so that we can adapt our
 algorithms to specific applications.
 
-\paragraph{Matrices for Feature}
+\paragraph{Matrices for Features}
 
-A dataset with finite number of features can be associated with a vector space,
-i.e., feature space. An object\hyp{}feature matrix $A\in\BBR^{M\Times N}$
-compactly encodes all of its information by treating $N$ data points as column
-vectors, each with $M$ features. In addition, many algorithms involve linear
-algebraic operations on data, and such a representation naturally facilitates
-their computation. For example, data compression and dimensionality reduction
+An object\hyp{}feature matrix $A\in\BBR^{M\Times N}$ encodes $N$ data points as
+column vectors, each with $M$ features. Many algorithms involve linear algebraic
+operations on data, and such a representation naturally facilitates their
+computation. For example, data compression and dimensionality reduction
 techniques, such as frequency sampling and principal component analysis, are
 usually implemented as low\hyp{}rank decompositions on data matrices. Neural
 networks can be viewed as a sequence of linear transformations and element
@@ -47,55 +45,55 @@ easily the most popular mathematical objects for keeping track of data during
 computation.
 
 In this dissertation, a majority of matrices are this type, even though they are
-not always the focus of study. Every experiment of Gaussian processes regression
-uses object\hyp{}feature matrices for both input and output. In topic modeling,
-the topic\hyp{}word matrix is a latent matrix of this type, and plays an crucial
-role in interpreting the model. Finally, the main matrix of interest in 
-\cref{ch6} is formed by having electron orbital pairs as objects and 
+not always the focus of study. For example, multi\hyp{}output Gaussian process
+regression uses object\hyp{}feature matrices for both input and output. In topic
+modeling, the topic\hyp{}word matrix is a latent matrix of this type, and plays
+an crucial role in interpreting the model. Finally, the main matrix of interest
+in \cref{ch6} is formed by having electron orbital pairs as objects and 
 real\hyp{}space discretization as features.
 
-\paragraph{Matrices for Correlation}
+\paragraph{Matrices for Correlations}
 
-This type of matrices describes the pairwise relationship of objects rather
-than individual ones. Examples in this dissertation include the 
-co\hyp{}occurrence matrix in \cref{ch5} that indicates the probability of two
-objects occurring together in a document, and the kernel matrices in \cref{ch4}
-that measures the covariance between two points for a Gaussian process. The
-former can be derived from the document\hyp{}object matrix, which suggests this
-type of data matrices can sometimes be considered as higher\hyp{}order
-information extracted from the object\hyp{}feature matrices. The correlation
-between objects has various benefits and is widely used in statistical models.
-In our case, it leads to uncertainty quantification, theoretical optimality
-guarantee, and algorithmic robustness.
+This type of matrix describes the pairwise relationship of objects rather
+than object\hyp{}feature relationships. Examples in this dissertation include
+the co\hyp{}occurrence matrix in \cref{ch5} that indicates the probability of
+two objects occurring together in a document, and the kernel matrices in 
+\cref{ch4} that measures the covariance between two points for a Gaussian
+process. The former can be derived from the document\hyp{}object matrix, which
+suggests this type of data matrix can sometimes be considered as 
+higher\hyp{}order information extracted from the object\hyp{}feature matrices.
+The correlation between objects has various benefits and is widely used in
+statistical models. In our case, it leads to uncertainty quantification,
+a theoretical optimality guarantee, and algorithmic robustness.
 
 \paragraph{Matrices for Dynamics}
 
-The last type of data matrices is generally associated with differential
-operators, whether in a continuous setting or the corresponding discrete
-analogs. These matrices appear in \cref{ch6} both explicitly as
-the discretization of Laplace operator, and implicitly as integral
-operators---e.g., the Hatree\hyp{}Fock operator. Here, we focus on exploiting
-structural information to compress these matrices and gain computational
-efficiency. On the other hand, in \cref{ch3} the graph Laplacian and the random
-walk matrix describe the dynamics on the original graph, which we use to reveal
-structural properties. There is no doubt a deep connection between the dynamics
-on an underlying object and its structures. In general, we can leverage our
-knowledge on one to gain valuable insights on the other.
+The last type of data matrix is generally associated with linear 
+time\hyp{}invariant systems. These matrices appear in \cref{ch6} both
+explicitly as the discretization of the Laplace operator, and implicitly as
+integral operators---e.g., the Hartree\hyp{}Fock operator. Here, we focus on
+exploiting structural information to compress these matrices and gain
+computational efficiency. On the other hand, in \cref{ch3} the graph Laplacian
+and the random walk matrix describe the dynamics on the original graph, which we
+use to reveal structural properties. There is a deep connection between the
+dynamics on an object and its structure. In general, we can leverage our
+knowledge of one to gain valuable insights into the other.
+
 
 \section{Functions of Matrices}\label{pre:fom}
 
 The main mathematical problems in both \cref{ch3,ch4} can be simplified to
 estimating key quantities for functions of matrices. In this dissertation, a
-function of matrices refers to $f(A)$, produced by a spectral mapping of $f$ on
-a matrix $A\in\BBR^{N\Times N}$. \citet{higham2008functions} gives a rigorous
-and general definition of $f(A)$, which only requires $f$ to be \emph{defined}
-\footnote{Defined is a formal term here. Given a matrix $A$ with distinct
+matrix function $f(A)$ is produced by a spectral mapping of $f$ on a matrix
+$A\in\BBR^{N\Times N}$. \citet{higham2008functions} gives a rigorous and general
+definition of $f(A)$, which only requires $f$ to be \emph{defined}\footnote{
+Defined is a formal term here. Given a matrix $A$ with distinct
 eigenvalues $\lambda_1,\cdots,\lambda_s$ and $n_i$ the size of the largest
 Jordan block for $\lambda_i$, the function $f$ is defined on the spectrum of $A$
 if $f^{(j)}(\lambda_i)$ exists for $j = 0\Colon n_i-1$ and $i = 1\Colon s$.
 Please refer to \cite[Definition~1.1]{higham2008functions} for a detailed
 discussion.} on the spectrum of $A$. However, we mostly work with a special
-case, where $A$ is Hermitian and $f$ is smooth over the spectrum of $A$. Given
+case, where $A$ is Hermitian and $f$ is analytic over the spectrum of $A$. Given
 the eigendecomposition $A = V^T\Lambda V$ where $V$ is orthogonal and $\Lambda =
 \diag(\lambda_1,\cdots,\lambda_N)$ is diagonal, the spectral mapping theorem
 tells us
@@ -111,9 +109,8 @@ eigendecomposition, which is not always feasible. Many tailored algorithms have
 been developed for a few specific but prevalent functions, like the matrix
 square root and matrix exponential \cite[Chapter 6 \& 10]{higham2008functions}.
 In a remarkable work, \citet{moler2003nineteen} presented nineteen ways of
-computing matrix exponential, comparing these in terms of both efficiency and
-stability. Generally, matrix decomposition methods are considered to be the most
-practical with existing efficient implementations.
+computing the matrix exponential, comparing these in terms of both efficiency
+and stability.
 
 Given the context in this dissertation, we adopt two methods for evaluating
 functions of matrices. The first is a polynomial expansion method in the
@@ -123,13 +120,11 @@ with the recurrence:
 	T_0(x) = 1,\quad T_1(x) = x,\quad T_{m+1}(x) = 2xT_m(x) - T_{m-1}(x)\,.
 \end{equation}
 The corresponding expansion is simply $f(x) \approx \tilde{f}(x)= \sum_
-{m=0}^Mc_mT_m(x)$. It is well\hyp{}known that such expansion with appropriate
-weights $c_m$ produces the best polynomial approximation over the compact
-support $[-1,1]$. In particular, for any smooth function $f$, the approximation
-error decays exponentially with the number of terms in the expansion~\cite{
+{m=0}^Mc_mT_m(x)$. For any smooth function $f$, the approximation error decays
+exponentially with the number of terms in the expansion~\cite{
 Trefethen-2013-ATAP}. Many functions we deal with satisfy the smoothness
 condition, thereby making this method very attractive in our applications. To
-evaluate the function of matrix $f(A)$, we take advantage of the three\hyp{}term
+evaluate the matrix function $f(A)$, we take advantage of the three\hyp{}term
 recurrence relation
 \begin{equation}\label{eqn:3term_fom}
 	T_{m+1}(A) = 2AT_m(A)-T_{m-1}(A)\,,
@@ -150,17 +145,17 @@ numerically low\hyp{}rank, or has relatively few distinct eigenvalues, it will
 only take a small number of Lanczos iterations to obtain the approximation
 $A\approx Z_M\Gamma_MZ_M^T$. Afterwards, we can quickly compute $f(\Gamma_M)$
 through eigendecomposition since $\Gamma_M$ is $M$\hyp{}by\hyp{}$M$ and
-tri\hyp{}diagonal. The final approximation is $f(A) = Z_Mf(\Gamma_M)Z_M^T$.
+tridiagonal. The final approximation is $f(A) \approx Z_Mf(\Gamma_M)Z_M^T$.
 
 Both methods we introduce here have clear advantages and drawbacks. The
-Chebyshev expansion method has strong theoretical guarantees on convergence rate
-for $f$ with some degree of smoothness over the spectrum of $A$. For irregular
-$f$, it may take extremely large number of moments to resolve possible
+Chebyshev expansion method has strong theoretical guarantees on the convergence
+rate for $f$ with some degree of smoothness over the spectrum of $A$. For
+irregular $f$, it may take extremely large number of moments to resolve possible
 discontinuities, thus suffering in either efficiency or approximation quality.
 On the other hand, GQL is well suited for matrices with a few distinct
-eigenvalues, which allows the Lanczos algorithm to converge quickly.
-However, it requires extra computation to ensure numerical stability in floating
-point arithmetics. Therefore, it is crucial for us to determine the numerical
+eigenvalues, which allows the Lanczos algorithm to converge quickly. However, it
+requires extra computation to ensure numerical stability in floating point
+arithmetic. Therefore, it is crucial for us to determine the numerical
 characteristics of the matrices we are interested in, and choose the appropriate
 method for each application.
 
