@@ -363,6 +363,7 @@
 
 
 \newenvironment{biosketch}{%
+  \phantomsection
   \typeout{Vita}
   \pagestyle{plain}
   \pagenumbering{roman}
@@ -374,6 +375,7 @@
 }
 
 \newenvironment{dedication}{%
+  \phantomsection
   \prelim@contents{Dedication}
   \null\vfill
   \begin{center}
@@ -384,6 +386,7 @@
 }
 
 \newenvironment{acknowledgements}{%
+  \phantomsection
   \prelim@contents{Acknowledgements}
   \chapter*{Acknowledgements}
 }{%
@@ -391,6 +394,7 @@
 }
 
 \newcommand{\contentspage}{%
+  \phantomsection
   \listspacing{toc}
   \label{toc}
   \prelim@contents{\contentsname}
@@ -400,6 +404,7 @@
 }
 
 \newcommand{\tablelistpage}{%
+  \phantomsection
   \listspacing{tab}
   \label{lot}
   \prelim@contents{\listtablename}
@@ -409,6 +414,7 @@
 }
 
 \newcommand{\figurelistpage}{%
+  \phantomsection
   \listspacing{fig}
   \label{lof}
   \prelim@contents{\listfigurename}
@@ -418,6 +424,7 @@
 }
 
 \newcommand{\symlistpage}{%
+  \phantomsection
   \listspacing{sym}
   \label{los}
   \renewcommand{\nomname}{List of Symbols}

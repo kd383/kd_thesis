@@ -1,19 +1,18 @@
-Nowadays, the rapid growth of data brings brand new opportunities and challenges
+The rapid growth of data brings brand new opportunities and challenges
 to researchers across many fields, e.g., mathematics, computer science,
-statistics, scientific computing, and machine learning. There is a greater than
-ever interest in scalable numerical algorithm for taking advantage of the
-information explosion. Randomized numerical linear algebra provides a powerful
-set of tools for handling large\hyp{}scale matrix data that classical algorithms
-are unsuitable to. In this dissertation, we have presented a collection of
-randomized NLA algorithms for overcoming the computational obstacles in our
-problems. The applications we work with come from a diverse background,
-including network science, Gaussian processes regression, natural language
-processing, and quantum chemistry. In all these cases, randomized NLA has led to
-efficient and robust algorithms, enabling us to extract valuable information
-from massive datasets. As the ongoing trend of large data persists, we expect
-randomized NLA to play a more and more important role in the development of
-practical algorithms. This dissertation has also left many interesting open
-questions, which we are excited to explore in the future.
+statistics, scientific computing, and machine learning. There is more interest
+than ever in scalable numerical algorithms that take advantage of the abundant
+data. Randomized numerical linear algebra provides a powerful
+set of tools for handling large\hyp{}scale matrix data. In this dissertation, we
+have presented a collection of randomized NLA algorithms for overcoming the
+computational obstacles in our problems. The applications we work with come from
+diverse areas, including network science, Gaussian process regression, natural
+language processing, and quantum chemistry. In all these cases, randomized NLA
+has led to efficient and robust algorithms, enabling us to extract valuable
+information from massive datasets. As the ongoing trend of large data persists,
+we expect randomized NLA to play a more and more important role in the
+development of practical algorithms. This dissertation has also left many
+interesting open questions, which we are excited to explore in the future.
 
 In \cref{ch3} we developed stochastic approximation methods for the spectral
 density of large real\hyp{}world graphs. We were able to link the spectral
@@ -31,25 +30,25 @@ quantities we compute into graph clustering, graph classification, and node role
 discovery.
 
 In \cref{ch4} we proposed multiple methods to efficiently estimate the log
-determinant of kernel matrices, thus scaling Gaussian processes regression to
+determinant of kernel matrices, thus scaling Gaussian process regression to
 handle massive datasets. Our methods are highly flexible as they build upon the
 fast matrix\hyp{}vector multiplication from existing kernel approximations. We
 showcased this generality by extending our approach to include derivative
-information. Together with dimensionality reduction through active subspace
+information. Together with dimensionality reduction through an active subspace
 method, we achieved efficient Bayesian optimization in high\hyp{}dimensional
-space. Our algorithms have been incorporated into the GPyTorch library, a python
-package for scalable Gaussian processes regression. In the future, we look
+space. Our algorithms have been incorporated into the GPyTorch library, a Python
+package for scalable Gaussian process regression. In the future, we look
 forward to applying our methods in other scenarios involving GPs.
 
 In \cref{ch5} we created a new scalable and robust framework for spectral
 inference of topic models. Through this pipeline, we are able to simultaneous
-compress and rectify large co\hyp{}occurrence statistics, which then can be
-used for efficient inference of the underlying structure. Rectification, as a
-key ingredient in this work, helps correct the mismatch between proposed models
-and noisy data. The noise level in data varies significantly by applications,
-some of which are known for having low signal\hyp{}noise ratio. Therefore, we
-hope to apply our scalable rectification to those applications, which will
-enhance the robustness in the existing methods. Moreover, the 
+compress and rectify large matrices of co\hyp{}occurrence statistics, which then
+can be used for efficient inference of the underlying structure. Rectification,
+as a key ingredient in this work, helps correct the mismatch between proposed
+models and noisy data. The noise level in data varies significantly across
+applications, some of which are known for having low signal\hyp{}noise ratio.
+Therefore, we hope to apply our scalable rectification to those applications,
+which will enhance the robustness of the existing methods. Moreover, the 
 $\epsilon$\hyp{}nonnegativity is a rather heuristic approach toward our problem.
 In the future, we hope to find a better way of detecting negative entries in the
 outer product form $XX^T$.
@@ -59,11 +58,11 @@ In \cref{ch6} we used centroid Voronoi tessellation, implemented as weighted
 K\hyp{}means algorithm, to accelerate electronic structure calculation. As a
 replacement for the deterministic counterpart, our method brings tremendous
 speed\hyp{}up without any loss of accuracy in practice. Nonetheless, the
-remaining computation is still very time\hyp{}consuming. The electronic
-structure calculation, along with other quantum chemistry problems, is one of
-the most popular tasks on supercomputers. Therefore, it is very exciting to seek
-more opportunities where randomized NLA can improve the efficiency of those
-computation while satisfying the high standard in accuracy. On the other hand,
-there are many more numerical methods, like the kernel polynomial method, in
-this field that can be adapted to new application. We hope to further explore
-these in the future.
+remaining computation is still very time\hyp{}consuming. Electronic structure
+calculation, along with other quantum chemistry problems, are among the most
+popular tasks on supercomputers. Therefore, it is very exciting to seek more
+opportunities where randomized NLA can improve the efficiency of those
+computation while maintaining high accuracy. On the other hand, there are many
+more numerical methods in this field that, like the kernel polynomial method,
+can be adapted to new applications. We hope to further explore these in the
+future.

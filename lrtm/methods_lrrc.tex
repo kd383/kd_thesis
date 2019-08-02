@@ -7,7 +7,27 @@ structure is to directly minimize $\norm{C - Y Y^T}_F$ with the necessary
 constraints. In this section, we propose two new algorithms to simultaneously
 compress and rectify the input by representing $C \in \BBR^{N \Times N}$ by a
 low\hyp{}rank outer product $Y Y^T$.
-\begin{figure}[ht]
+
+\subsection{Epsilon Non-Negative Rectification}
+The alternating projection iteration in \cref{alg:rawa} produces
+low\hyp{}rank semi\hyp{}definite intermediate matrices in factored form at each
+iteration. By construction, the positive semi\hyp{}definite projection 
+($\PSD_K$) and the normalization projection ($\NOR$) produce positive
+semi\hyp{}definite matrices of rank $K$ and $K+1$, respectively.  Unfortunately,
+the final projection to enforce elementwise non-negativity ($\NN$) destroys this
+low rank structure. However, the $\NN$ projection only makes significant changes
+to a few elements; that is, the output of the $\NN$ projection at step $t$ is
+nearly rank $K+1$ plus a sparse correction $E_t$.  The Epsilon Non\hyp{}Negative
+Rectification algorithm (\cref{alg:enn}) has the same structure as 
+\cref{alg:rawa}, but with the key difference that it returns a
+sparse\hyp{}plus\hyp{}low\hyp{}rank representation of the $\NN$ projection
+rather than materializing a dense representation. Matrix\hyp{}vector products
+with this sparse\hyp{}plus\hyp{}low\hyp{}rank representation require $\calO(NK + 
+\operatorname{nnz}(E_t))$ time, and $\calO(K)$ such matrix\hyp{}vector products
+can be used in a Lanczos eigensolver to compute the truncated eigendecomposition
+at the start of the next iteration.
+
+\begin{figure}[hbpt]
 	\begin{algorithm}[H]
 		\SetKwInput{KwInput}{Input}
 		\SetKwInput{KwOutput}{Output}
@@ -37,55 +57,6 @@ low\hyp{}rank outer product $Y Y^T$.
 	\label{alg:enn}        
 	\end{algorithm}
 \end{figure}
-
-\begin{figure}[ht]
-  \begin{algorithm}[H]
-		\SetKwInput{KwInput}{Input}
-		\SetKwInput{KwOutput}{Output}
-		\DontPrintSemicolon
-		\KwInput{Object co-occurrence $C \in \BBR^{N \Times N}$}
-		\hspace{28px} The number of clusters $K$\\
-		\KwOutput{Rectified compression $Y \in \BBR^{N \Times K}$}
-		\Begin{
-			$(V, D) \leftarrow$ Truncated-Eig$(C, K)$\;
-			$(X_0, Y_0) \leftarrow (V \sqrt{D}, V \sqrt{D})$\;
-	    \Repeat{$Y$ converges}{
-	    	$c_t \leftarrow \gamma L_1(Y_{t})$\;
-	      \vspace{3px}
-	      $X_{t+1}' \leftarrow X_{t} - (1/c_t)\nabla_{X} J(X_{t}, Y_{t})$\;
-	      \vspace{3px}
-	      $X_{t+1} \leftarrow \max(X_{t+1}', 0)$\;
-	      \vspace{3px}
-	      $d_t \leftarrow \gamma L_2(X_{t+1})$\;
-	      \vspace{3px}
-	      $Y_{t+1}' \leftarrow Y_{t} - (1/d_t)\nabla_{Y} J(X_{t+1}, Y_{t})$\;
-	      \vspace{3px}
-	      $Y_{t+1} \leftarrow \max(Y_{t+1}', 0)$\;
-	    }
-		}
-		\caption{PALM-rectification (PALM)}
-	  \label{alg:palm}      
-	\end{algorithm}
-\end{figure}
-
-\subsection{Epsilon Non-Negative Rectification}
-The alternating projection iteration in \cref{alg:rawa} produces
-low\hyp{}rank semi\hyp{}definite intermediate matrices in factored form at each
-iteration. By construction, the positive semi\hyp{}definite projection 
-($\PSD_K$) and the normalization projection ($\NOR$) produce positive
-semi\hyp{}definite matrices of rank $K$ and $K+1$, respectively.  Unfortunately,
-the final projection to enforce elementwise non-negativity ($\NN$) destroys this
-low rank structure. However, the $\NN$ projection only makes significant changes
-to a few elements; that is, the output of the $\NN$ projection at step $t$ is
-nearly rank $K+1$ plus a sparse correction $E_t$.  The Epsilon Non\hyp{}Negative
-Rectification algorithm (\cref{alg:enn}) has the same structure as 
-\cref{alg:rawa}, but with the key difference that it returns a
-sparse\hyp{}plus\hyp{}low\hyp{}rank representation of the $\NN$ projection
-rather than materializing a dense representation. Matrix\hyp{}vector products
-with this sparse\hyp{}plus\hyp{}low\hyp{}rank representation require $\calO(NK + 
-\operatorname{nnz}(E_t))$ time, and $\calO(K)$ such matrix\hyp{}vector products
-can be used in a Lanczos eigensolver to compute the truncated eigendecomposition
-at the start of the next iteration.
 
 Maintaining a sparse correction matrix $E_t$ at each step lets the ENN approach
 avoid the storage overheads of the original alternating projection algorithm. 
@@ -126,9 +97,10 @@ $\calO(NK)$ at most.
 
 Note that $J$ is semi\hyp{}algebraic (as it is a real polynomial) with two
 partial derivatives: $\nabla_{X}J \Eq (X Y^T \Minus C)Y \Plus s(X\Minus Y)$ and
-$\nabla_{Y}J \Eq (Y X^T \Minus C)X \Plus s(Y \Minus X)$. So, the following lemma
-guarantees the global convergence.
-\begin{lemma}
+$\nabla_{Y}J \Eq (Y X^T \Minus C)X \Plus s(Y \Minus X)$. So the following lemma
+guarantees the convergence to a critical points, under the assumption that $X,
+Y$ remain bounded during the iterations.
+\begin{lemma}\label{thm:glc}
   For any fixed $Y$, $\nabla_{X}J(X, Y)$ is globally Lipschitz continuous with
   the moduli $L_1(Y) \Eq \norm{Y^T Y \Plus sI_K}_2$. So is $\nabla_{Y}J(X, Y)$
   given any fixed $X$ with $L_2(X) \Eq \norm{X^T X \Plus sI_K}_2$.
@@ -145,5 +117,35 @@ guarantees the global convergence.
 \end{proof}
 \endgroup
 \cref{alg:palm} shows the PALM\hyp{}rectification with the adaptive control of
-the learning rates based on the tight 2\hyp{}norm Lipschitz modulis at each step
-$t$.
+the learning rates based on the tight 2\hyp{}norm Lipschitz modulis defined in
+\cref{thm:glc} at each step $t$. In our experiments, we chose $\gamma = 2.0$ and
+$s=1e-4$ based on our empirical observations on multiple datasets.
+\begin{figure}[htbp]
+  \begin{algorithm}[H]{}
+		\SetKwInput{KwInput}{Input}
+		\SetKwInput{KwOutput}{Output}
+		\DontPrintSemicolon
+		\KwInput{Object co-occurrence $C \in \BBR^{N \Times N}$}
+		\hspace{28px} The number of clusters $K$\\
+		\KwOutput{Rectified compression $Y \in \BBR^{N \Times K}$}
+		\Begin{
+			$(V, D) \leftarrow$ Truncated-Eig$(C, K)$\;
+			$(X_0, Y_0) \leftarrow (V \sqrt{D}, V \sqrt{D})$\;
+	    \Repeat{$Y$ converges}{
+	    	$c_t \leftarrow \gamma L_1(Y_{t})$\;
+	      \vspace{3px}
+	      $X_{t+1}' \leftarrow X_{t} - (1/c_t)\nabla_{X} J(X_{t}, Y_{t})$\;
+	      \vspace{3px}
+	      $X_{t+1} \leftarrow \max(X_{t+1}', 0)$\;
+	      \vspace{3px}
+	      $d_t \leftarrow \gamma L_2(X_{t+1})$\;
+	      \vspace{3px}
+	      $Y_{t+1}' \leftarrow Y_{t} - (1/d_t)\nabla_{Y} J(X_{t+1}, Y_{t})$\;
+	      \vspace{3px}
+	      $Y_{t+1} \leftarrow \max(Y_{t+1}', 0)$\;
+	    }
+		}
+		\caption{PALM-rectification (PALM)}
+	  \label{alg:palm}      
+	\end{algorithm}
+\end{figure}
